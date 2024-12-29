@@ -1,62 +1,129 @@
-import express, {Request, Response, Router} from 'express';
-import {StatusCodes} from 'http-status-codes';
-import {PrismaClient} from '@prisma/client';
-import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
+import express, {Request, Response, Router} from "express";
+import {StatusCodes} from "http-status-codes";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
-const prisma = new PrismaClient();
-
-import {logger} from '@/server';
-import {env} from '@/common/env';
+import {logger} from "@/server";
+import {env} from "@/common/env";
+import {authenticate, authorize} from "@/middleware/auth";
+import {ROLES} from "@/common/constants";
+import {UserLoginBodySchema, UserRegistrationSchema} from "@/schemas/users";
+import {handleServiceResponse} from "@/common/responses";
+import {ResponseStatus, ServiceResponse} from "@/schemas/api";
+import {db} from "@/db";
 
 export const usersRouter: Router = (() => {
   const router = express.Router();
 
-  router.get('/users', async (req: Request, res: Response) => {
-    logger.info(`VOB request`);
+  router.get(
+    "/admin",
+    authenticate,
+    authorize([ROLES.ADMIN]),
+    async (req: Request, res: Response) => {
+      logger.info(`User request`);
 
-    res.status(StatusCodes.OK).send({});
+      res.status(StatusCodes.OK).send({
+        user: (req as any).user,
+      });
+    }
+  );
+
+  router.get("/profile", authenticate, async (req: Request, res: Response) => {
+    logger.info(`User request`);
+
+    res.status(StatusCodes.OK).send({
+      user: (req as any).user,
+    });
   });
 
-  router.post('/register', async (req, res) => {
+  router.post("/register", async (req, res) => {
     const {email, password, name, role} = req.body;
 
-    if (!email || !password || !name) {
-      return res.status(400).json({error: 'Missing fields'});
+    const parse = UserRegistrationSchema.safeParse(req.body);
+    if (!parse.success) {
+      handleServiceResponse(
+        new ServiceResponse(
+          ResponseStatus.Failed,
+          `wrong body: invalid field ${parse.error.errors[0].path[0]}`,
+          {},
+          StatusCodes.BAD_REQUEST
+        ),
+        res
+      );
+      return;
     }
 
     const hashedPassword = await bcrypt.hash(password, env.PASSWORD_SALT);
-
-    const user = await prisma.user.create({
+    const user = await db.user.create({
       data: {
         email,
         password: hashedPassword,
         name,
-        role: role || 'USER',
+        role: role || ROLES.USER,
       },
     });
 
-    res.status(201).json({message: 'User registered', user});
+    handleServiceResponse(
+      new ServiceResponse(
+        ResponseStatus.Success,
+        `user created succesfully`,
+        {user},
+        StatusCodes.ACCEPTED
+      ),
+      res
+    );
   });
 
-  router.post('/login', async (req, res) => {
+  router.post("/login", async (req, res) => {
     const {email, password} = req.body;
 
-    const user = await prisma.user.findUnique({where: {email}});
+    const parse = UserLoginBodySchema.safeParse(req.body);
+    if (!parse.success) {
+      handleServiceResponse(
+        new ServiceResponse(
+          ResponseStatus.Failed,
+          `wrong body: invalid field ${parse.error.errors[0].path[0]}`,
+          {},
+          StatusCodes.BAD_REQUEST
+        ),
+        res
+      );
+      return;
+    }
+
+    const user = await db.user.findUnique({where: {email}});
     if (!user) {
-      return res.status(401).json({error: 'Invalid email or password'});
+      handleServiceResponse(
+        new ServiceResponse(
+          ResponseStatus.Failed,
+          "Invalid email or password",
+          {},
+          StatusCodes.UNAUTHORIZED
+        ),
+        res
+      );
+      return;
     }
 
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) {
-      return res.status(401).json({error: 'Invalid email or password'});
+      handleServiceResponse(
+        new ServiceResponse(
+          ResponseStatus.Failed,
+          "Invalid email or password",
+          {},
+          StatusCodes.UNAUTHORIZED
+        ),
+        res
+      );
+      return;
     }
 
     const token = jwt.sign({id: user.id, role: user.role}, env.JWT_SECRET, {
-      expiresIn: process.env.JWT_EXPIRATION || '7d',
+      expiresIn: process.env.JWT_EXPIRATION || "7d",
     });
 
-    await prisma.session.create({
+    await db.session.create({
       data: {
         userId: user.id,
         token,
@@ -64,19 +131,38 @@ export const usersRouter: Router = (() => {
       },
     });
 
-    res.json({token});
+    handleServiceResponse(
+      new ServiceResponse(
+        ResponseStatus.Success,
+        `login succesfull`,
+        {token},
+        StatusCodes.ACCEPTED
+      ),
+      res
+    );
   });
 
-  router.post('/logout', async (req, res) => {
-    const token = req.headers.authorization?.split(' ')[1];
+  router.post("/logout", authenticate, async (req, res) => {
+    const token = (req as any)?.user?.token;
     if (!token) {
-      return res.status(401).json({error: 'No token provided'});
+      return handleServiceResponse(
+        new ServiceResponse(
+          ResponseStatus.Failed,
+          "No token provided",
+          {},
+          StatusCodes.UNAUTHORIZED
+        ),
+        res
+      );
     }
 
-    await prisma.session.delete({where: {token}});
-    res.json({message: 'Logged out'});
-  });
+    await db.session.delete({where: {token}});
 
+    handleServiceResponse(
+      new ServiceResponse(ResponseStatus.Success, `logged out`, {}, StatusCodes.ACCEPTED),
+      res
+    );
+  });
 
   return router;
 })();

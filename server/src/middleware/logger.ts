@@ -1,6 +1,6 @@
 import {randomUUID} from 'crypto';
 import {Request, RequestHandler, Response} from 'express';
-import {env} from './env';
+import {env} from '../common/env';
 import {IncomingMessage, ServerResponse} from 'http';
 import {getReasonPhrase, StatusCodes} from 'http-status-codes';
 import {LevelWithSilent} from 'pino';

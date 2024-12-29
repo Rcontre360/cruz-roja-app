@@ -1,10 +1,10 @@
 import dotenv from 'dotenv';
-dotenv.config({path: `${__dirname}/../../.env.${process.env.NODE_ENV}.local`});
+dotenv.config({path: `${__dirname}/../../.env.${process.env.NODE_ENV}`});
 
 import {cleanEnv, host, num, port, str, testOnly} from 'envalid';
 
 export const env = cleanEnv(process.env, {
-  NODE_ENV: str({devDefault: testOnly('test'), choices: ['development', 'production', 'test']}),
+  NODE_ENV: str({devDefault: testOnly('test'), choices: ['dev', 'prod', 'test']}),
   HOST: host({devDefault: testOnly('localhost')}),
 
   SERVER_PORT: port({devDefault: testOnly(3000)}),
@@ -16,6 +16,6 @@ export const env = cleanEnv(process.env, {
   POSTGRES_ENDPOINT: str({devDefault: ''}),
   JWT_SECRET: str({devDefault: ''}),
   JWT_EXPIRATION: str({devDefault: '7d'}),
-  PASSWORD_SALT: num({default: 42}),
+  PASSWORD_SALT: num({default: 10}),
 });
 
