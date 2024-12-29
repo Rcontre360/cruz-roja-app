@@ -7,7 +7,7 @@ import {healthCheckRouter} from './api/health/router';
 import {usersRouter} from './api/users/router';
 import {env} from './common/env';
 import errorHandler from './common/error';
-import requestLogger from './common/logger';
+import requestLogger from './middleware/logger';
 
 const serviceName = 'server';
 const logger = pino({name: serviceName, level: env.PINO_LOG_LEVEL});

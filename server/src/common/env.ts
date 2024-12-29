@@ -14,5 +14,8 @@ export const env = cleanEnv(process.env, {
   PINO_LOG_LEVEL: str({devDefault: 'debug', default: 'info'}),
 
   POSTGRES_ENDPOINT: str({devDefault: ''}),
+  JWT_SECRET: str({devDefault: ''}),
+  JWT_EXPIRATION: str({devDefault: '7d'}),
+  PASSWORD_SALT: num({default: 42}),
 });
 
