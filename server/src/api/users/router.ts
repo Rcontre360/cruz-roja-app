@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 import {env} from "@/common/env";
 import {authenticate} from "@/middleware/auth";
 import {ROLES} from "@/common/constants";
-import {UserLoginBodySchema, UserRegistrationSchema} from "@/schemas/users";
+import {UserLoginBodySchema, UserRegistrationBodySchema} from "@/schemas/users";
 import {handleServiceResponse} from "@/common/responses";
 import {ResponseStatus, ServiceResponse} from "@/schemas/api";
 import {db} from "@/db";
@@ -29,7 +29,7 @@ export const usersRouter: Router = (() => {
   });
 
   router.post("/register", async (req, res) => {
-    const parse = UserRegistrationSchema.safeParse(req.body);
+    const parse = UserRegistrationBodySchema.safeParse(req.body);
     if (!parse.success) {
       handleServiceResponse(
         new ServiceResponse(
@@ -43,7 +43,7 @@ export const usersRouter: Router = (() => {
       return;
     }
 
-    const {email, password, name, role} = req.body;
+    const {email, password, name} = req.body;
 
     try {
       const hashedPassword = await bcrypt.hash(password, env.PASSWORD_SALT);
@@ -52,7 +52,7 @@ export const usersRouter: Router = (() => {
           email,
           password: hashedPassword,
           name,
-          role: role || ROLES.USER,
+          role: ROLES.ADMIN,
         },
       });
 

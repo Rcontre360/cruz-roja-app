@@ -1,11 +1,12 @@
 import express, {Request, Response, Router} from "express";
 import {StatusCodes} from "http-status-codes";
 
-import {authorize} from "@/middleware/auth";
+import {authenticate, authorize} from "@/middleware/auth";
 import {handleServiceResponse} from "@/common/responses";
 import {ResponseStatus, ServiceResponse} from "@/schemas/api";
 import {db} from "@/db";
 import {ProgramRegisterBodySchema} from "@/schemas/programs";
+import {ROLES} from "@/common/constants";
 
 export const programsRouter: Router = (() => {
   const router = express.Router();
@@ -31,7 +32,7 @@ export const programsRouter: Router = (() => {
     }
   });
 
-  router.post("/register", authorize(["ADMIN"]), async (req, res) => {
+  router.post("/register", authenticate, authorize([ROLES.ADMIN]), async (req, res) => {
     const parse = ProgramRegisterBodySchema.safeParse(req.body);
     if (!parse.success) {
       handleServiceResponse(
@@ -80,7 +81,7 @@ export const programsRouter: Router = (() => {
     }
   });
 
-  router.delete("/remove/:programId", authorize(["ADMIN"]), async (req, res) => {
+  router.delete("/remove/:programId", authenticate, authorize([ROLES.ADMIN]), async (req, res) => {
     const {programId} = req.params;
 
     if (!programId) {
@@ -122,7 +123,7 @@ export const programsRouter: Router = (() => {
     }
   });
 
-  router.put("/edit/:programId", authorize(["ADMIN"]), async (req, res) => {
+  router.put("/edit/:programId", authenticate, authorize([ROLES.ADMIN]), async (req, res) => {
     const {programId} = req.params;
     const {name, description} = req.body;
 

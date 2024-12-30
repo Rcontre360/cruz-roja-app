@@ -1,19 +1,19 @@
-import {randomUUID} from 'crypto';
-import {Request, RequestHandler, Response} from 'express';
-import {env} from '../common/env';
-import {IncomingMessage, ServerResponse} from 'http';
-import {getReasonPhrase, StatusCodes} from 'http-status-codes';
-import {LevelWithSilent} from 'pino';
-import {CustomAttributeKeys, Options, pinoHttp} from 'pino-http';
+import {randomUUID} from "crypto";
+import {Request, RequestHandler, Response} from "express";
+import {env} from "../common/env";
+import {IncomingMessage, ServerResponse} from "http";
+import {getReasonPhrase, StatusCodes} from "http-status-codes";
+import {LevelWithSilent} from "pino";
+import {CustomAttributeKeys, Options, pinoHttp} from "pino-http";
 
 enum LogLevel {
-  Fatal = 'fatal',
-  Error = 'error',
-  Warn = 'warn',
-  Info = 'info',
-  Debug = 'debug',
-  Trace = 'trace',
-  Silent = 'silent',
+  Fatal = "fatal",
+  Error = "error",
+  Warn = "warn",
+  Info = "info",
+  Debug = "debug",
+  Trace = "trace",
+  Silent = "silent",
 }
 
 type PinoCustomProps = {
@@ -26,7 +26,7 @@ type PinoCustomProps = {
 const requestLoggerBuild = (options?: Options): RequestHandler[] => {
   const pinoOptions: Options = {
     enabled: env.isProduction,
-    customProps: customProps as unknown as Options['customProps'],
+    customProps: customProps as unknown as Options["customProps"],
     redact: [],
     genReqId,
     customLogLevel,
@@ -40,10 +40,10 @@ const requestLoggerBuild = (options?: Options): RequestHandler[] => {
 };
 
 const customAttributeKeys: CustomAttributeKeys = {
-  req: 'request',
-  res: 'response',
-  err: 'error',
-  responseTime: 'timeTaken',
+  req: "request",
+  res: "response",
+  err: "error",
+  responseTime: "timeTaken",
 };
 
 const customProps = (req: Request, res: Response): PinoCustomProps => ({
@@ -66,7 +66,11 @@ const responseBodyMiddleware: RequestHandler = (_req, res, next) => {
   next();
 };
 
-const customLogLevel = (_req: IncomingMessage, res: ServerResponse<IncomingMessage>, err?: Error): LevelWithSilent => {
+const customLogLevel = (
+  _req: IncomingMessage,
+  res: ServerResponse<IncomingMessage>,
+  err?: Error
+): LevelWithSilent => {
   if (err || res.statusCode >= StatusCodes.INTERNAL_SERVER_ERROR) return LogLevel.Error;
   if (res.statusCode >= StatusCodes.BAD_REQUEST) return LogLevel.Warn;
   if (res.statusCode >= StatusCodes.MULTIPLE_CHOICES) return LogLevel.Silent;
@@ -79,14 +83,13 @@ const customSuccessMessage = (req: IncomingMessage, res: ServerResponse<Incoming
 };
 
 const genReqId = (req: IncomingMessage, res: ServerResponse<IncomingMessage>) => {
-  const existingID = req.id ?? req.headers['x-request-id'];
+  const existingID = req.id ?? req.headers["x-request-id"];
   if (existingID) return existingID;
   const id = randomUUID();
-  res.setHeader('X-Request-Id', id);
+  res.setHeader("X-Request-Id", id);
   return id;
 };
 
 export const requestLogger = requestLoggerBuild;
 
 export default requestLogger;
-

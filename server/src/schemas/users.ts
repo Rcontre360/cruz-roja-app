@@ -1,9 +1,8 @@
 import {z} from "zod";
 import {Age, Email, Phone, UserRole} from "./misc";
 
-export type UserRegistration = z.infer<typeof UserRegistrationSchema>;
-export const UserRegistrationSchema = z.object({
-  role: UserRole,
+export type UserRegistrationBody = z.infer<typeof UserRegistrationBodySchema>;
+export const UserRegistrationBodySchema = z.object({
   email: Email,
   password: z.string(),
   name: z.string(),
