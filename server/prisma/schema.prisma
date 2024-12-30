@@ -17,6 +17,7 @@ model User {
   updatedAt DateTime   @updatedAt
   sessions  Session[] // A user can have multiple active sessions
   Activity  Activity[]
+  Program   Program[]
 }
 
 model Activity {
@@ -43,6 +44,15 @@ model Session {
 
   // Relationships
   user User @relation(fields: [userId], references: [id])
+}
+
+model Program {
+  id           Int      @id @default(autoincrement())
+  name         String   @unique
+  description  String
+  creationDate DateTime @default(now())
+  createdBy    User     @relation(fields: [createdById], references: [id])
+  createdById  String   @db.Uuid
 }
 
 enum Role {

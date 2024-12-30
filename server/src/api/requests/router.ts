@@ -3,8 +3,9 @@ import {StatusCodes} from "http-status-codes";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
+import {logger} from "@/server";
 import {env} from "@/common/env";
-import {authenticate} from "@/middleware/auth";
+import {authenticate, authorize} from "@/middleware/auth";
 import {ROLES} from "@/common/constants";
 import {UserLoginBodySchema, UserRegistrationSchema} from "@/schemas/users";
 import {handleServiceResponse} from "@/common/responses";
@@ -14,21 +15,30 @@ import {db} from "@/db";
 export const usersRouter: Router = (() => {
   const router = express.Router();
 
+  router.get(
+    "/admin",
+    authenticate,
+    authorize([ROLES.ADMIN]),
+    async (req: Request, res: Response) => {
+      logger.info(`User request`);
+
+      res.status(StatusCodes.OK).send({
+        user: (req as any).user,
+      });
+    }
+  );
+
   router.get("/profile", authenticate, async (req: Request, res: Response) => {
-    handleServiceResponse(
-      new ServiceResponse(
-        ResponseStatus.Success,
-        `success`,
-        {
-          user: (req as any).user,
-        },
-        StatusCodes.ACCEPTED
-      ),
-      res
-    );
+    logger.info(`User request`);
+
+    res.status(StatusCodes.OK).send({
+      user: (req as any).user,
+    });
   });
 
   router.post("/register", async (req, res) => {
+    const {email, password, name, role} = req.body;
+
     const parse = UserRegistrationSchema.safeParse(req.body);
     if (!parse.success) {
       handleServiceResponse(
@@ -42,8 +52,6 @@ export const usersRouter: Router = (() => {
       );
       return;
     }
-
-    const {email, password, name, role} = req.body;
 
     try {
       const hashedPassword = await bcrypt.hash(password, env.PASSWORD_SALT);

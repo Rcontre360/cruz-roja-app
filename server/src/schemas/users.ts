@@ -1,12 +1,25 @@
 import {z} from "zod";
-import {Email, UserRole} from "./misc";
+import {Age, Email, Phone, UserRole} from "./misc";
 
 export type UserRegistration = z.infer<typeof UserRegistrationSchema>;
 export const UserRegistrationSchema = z.object({
+  role: UserRole,
   email: Email,
   password: z.string(),
   name: z.string(),
-  role: UserRole,
+  surname: z.string(),
+  age: Age,
+  country: z.string(),
+  phone: Phone,
+  address: z.string(),
+
+  disponibility: z.string(),
+  education: z.string(),
+  courses: z.string(),
+  ingressDate: z.number(),
+  program: z.string(),
+  subsidiary: z.string(),
+  dni: z.string(),
 });
 
 export type UserLoginBody = z.infer<typeof UserLoginBodySchema>;
