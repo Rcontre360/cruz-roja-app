@@ -53,25 +53,37 @@ export const usersRouter: Router = (() => {
       return;
     }
 
-    const hashedPassword = await bcrypt.hash(password, env.PASSWORD_SALT);
-    const user = await db.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        name,
-        role: role || ROLES.USER,
-      },
-    });
+    try {
+      const hashedPassword = await bcrypt.hash(password, env.PASSWORD_SALT);
+      const user = await db.user.create({
+        data: {
+          email,
+          password: hashedPassword,
+          name,
+          role: role || ROLES.USER,
+        },
+      });
 
-    handleServiceResponse(
-      new ServiceResponse(
-        ResponseStatus.Success,
-        `user created succesfully`,
-        {user},
-        StatusCodes.ACCEPTED
-      ),
-      res
-    );
+      handleServiceResponse(
+        new ServiceResponse(
+          ResponseStatus.Success,
+          `user created succesfully`,
+          {user},
+          StatusCodes.ACCEPTED
+        ),
+        res
+      );
+    } catch (err: any) {
+      handleServiceResponse(
+        new ServiceResponse(
+          ResponseStatus.Failed,
+          `error when registering user`,
+          {message: err.message},
+          StatusCodes.INTERNAL_SERVER_ERROR
+        ),
+        res
+      );
+    }
   });
 
   router.post("/login", async (req, res) => {
@@ -120,14 +132,15 @@ export const usersRouter: Router = (() => {
     }
 
     const token = jwt.sign({id: user.id, role: user.role}, env.JWT_SECRET, {
-      expiresIn: process.env.JWT_EXPIRATION || "7d",
+      expiresIn: env.JWT_EXPIRATION,
     });
 
+    const daySecs = parseInt(env.JWT_EXPIRATION.slice(0, -1), 10) * 3600 * 24 * 1000;
     await db.session.create({
       data: {
         userId: user.id,
         token,
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+        expiresAt: new Date(Date.now() + daySecs),
       },
     });
 
