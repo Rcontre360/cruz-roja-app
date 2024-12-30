@@ -1,50 +1,103 @@
 import express, {Request, Response, Router} from "express";
 import {StatusCodes} from "http-status-codes";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 
-import {logger} from "@/server";
-import {env} from "@/common/env";
 import {authenticate, authorize} from "@/middleware/auth";
-import {ROLES} from "@/common/constants";
-import {UserLoginBodySchema, UserRegistrationSchema} from "@/schemas/users";
 import {handleServiceResponse} from "@/common/responses";
 import {ResponseStatus, ServiceResponse} from "@/schemas/api";
 import {db} from "@/db";
+import {REQUEST_STATUS, ROLES} from "@/common/constants";
+import {CreateRequestBodySchema} from "@/schemas/requests";
 
-export const usersRouter: Router = (() => {
+export const requestsRouter: Router = (() => {
   const router = express.Router();
 
-  router.get(
-    "/admin",
-    authenticate,
-    authorize([ROLES.ADMIN]),
-    async (req: Request, res: Response) => {
-      logger.info(`User request`);
+  router.get("/all", async (_: Request, res: Response) => {
+    try {
+      const requests = await db.request.findMany();
 
-      res.status(StatusCodes.OK).send({
-        user: (req as any).user,
-      });
+      handleServiceResponse(
+        new ServiceResponse(
+          ResponseStatus.Success,
+          `success`,
+          {
+            requests,
+          },
+          StatusCodes.ACCEPTED
+        ),
+        res
+      );
+    } catch (err: any) {
+      handleServiceResponse(
+        new ServiceResponse(
+          ResponseStatus.Failed,
+          "Failed to fetch requests",
+          {message: err.message},
+          StatusCodes.INTERNAL_SERVER_ERROR
+        ),
+        res
+      );
     }
-  );
-
-  router.get("/profile", authenticate, async (req: Request, res: Response) => {
-    logger.info(`User request`);
-
-    res.status(StatusCodes.OK).send({
-      user: (req as any).user,
-    });
   });
 
-  router.post("/register", async (req, res) => {
-    const {email, password, name, role} = req.body;
-
-    const parse = UserRegistrationSchema.safeParse(req.body);
+  router.post("/create", authenticate, authorize([ROLES.USER, ROLES.ADMIN]), async (req, res) => {
+    const parse = CreateRequestBodySchema.safeParse(req.body);
     if (!parse.success) {
       handleServiceResponse(
         new ServiceResponse(
           ResponseStatus.Failed,
           `wrong body: invalid field ${parse.error.errors[0].path[0]}`,
+          {},
+          StatusCodes.BAD_REQUEST
+        ),
+        res
+      );
+      return;
+    }
+
+    const {country, subsidiary, programId} = CreateRequestBodySchema.parse(req.body);
+    const userId = (req as any).user.id;
+    console.log("USER ", userId);
+
+    try {
+      const request = await db.request.create({
+        data: {
+          userId,
+          country,
+          subsidiary,
+          programId,
+        },
+      });
+
+      handleServiceResponse(
+        new ServiceResponse(
+          ResponseStatus.Success,
+          `request created succesfully`,
+          {request},
+          StatusCodes.ACCEPTED
+        ),
+        res
+      );
+    } catch (err: any) {
+      handleServiceResponse(
+        new ServiceResponse(
+          ResponseStatus.Failed,
+          `error when creating request`,
+          {message: err.message},
+          StatusCodes.INTERNAL_SERVER_ERROR
+        ),
+        res
+      );
+    }
+  });
+
+  router.delete("/remove/:requestId", authenticate, authorize([ROLES.ADMIN]), async (req, res) => {
+    const {requestId} = req.params;
+
+    if (!requestId) {
+      handleServiceResponse(
+        new ServiceResponse(
+          ResponseStatus.Failed,
+          "request id must be defined",
           {},
           StatusCodes.BAD_REQUEST
         ),
@@ -54,21 +107,14 @@ export const usersRouter: Router = (() => {
     }
 
     try {
-      const hashedPassword = await bcrypt.hash(password, env.PASSWORD_SALT);
-      const user = await db.user.create({
-        data: {
-          email,
-          password: hashedPassword,
-          name,
-          role: role || ROLES.USER,
-        },
+      await db.request.delete({
+        where: {id: parseInt(requestId, 10)},
       });
-
       handleServiceResponse(
         new ServiceResponse(
           ResponseStatus.Success,
-          `user created succesfully`,
-          {user},
+          `request deleted succesfully`,
+          {},
           StatusCodes.ACCEPTED
         ),
         res
@@ -77,7 +123,7 @@ export const usersRouter: Router = (() => {
       handleServiceResponse(
         new ServiceResponse(
           ResponseStatus.Failed,
-          `error when registering user`,
+          `error when deleting request`,
           {message: err.message},
           StatusCodes.INTERNAL_SERVER_ERROR
         ),
@@ -86,15 +132,14 @@ export const usersRouter: Router = (() => {
     }
   });
 
-  router.post("/login", async (req, res) => {
-    const {email, password} = req.body;
+  router.put("/approve/:requestId", authenticate, authorize([ROLES.ADMIN]), async (req, res) => {
+    const {requestId} = req.params;
 
-    const parse = UserLoginBodySchema.safeParse(req.body);
-    if (!parse.success) {
+    if (!requestId) {
       handleServiceResponse(
         new ServiceResponse(
           ResponseStatus.Failed,
-          `wrong body: invalid field ${parse.error.errors[0].path[0]}`,
+          "request id must be defined",
           {},
           StatusCodes.BAD_REQUEST
         ),
@@ -103,78 +148,76 @@ export const usersRouter: Router = (() => {
       return;
     }
 
-    const user = await db.user.findUnique({where: {email}});
-    if (!user) {
+    try {
+      const updated = await db.request.update({
+        where: {id: parseInt(requestId, 10)},
+        data: {status: REQUEST_STATUS.APPROVED},
+      });
+
       handleServiceResponse(
         new ServiceResponse(
-          ResponseStatus.Failed,
-          "Invalid email or password",
-          {},
-          StatusCodes.UNAUTHORIZED
+          ResponseStatus.Success,
+          `request approved succesfully`,
+          {updated},
+          StatusCodes.ACCEPTED
         ),
         res
       );
-      return;
-    }
-
-    const isValid = await bcrypt.compare(password, user.password);
-    if (!isValid) {
+    } catch (err: any) {
       handleServiceResponse(
         new ServiceResponse(
           ResponseStatus.Failed,
-          "Invalid email or password",
-          {},
-          StatusCodes.UNAUTHORIZED
+          `error when approving request`,
+          {message: err.message},
+          StatusCodes.INTERNAL_SERVER_ERROR
         ),
         res
       );
-      return;
     }
-
-    const token = jwt.sign({id: user.id, role: user.role}, env.JWT_SECRET, {
-      expiresIn: env.JWT_EXPIRATION,
-    });
-
-    const daySecs = parseInt(env.JWT_EXPIRATION.slice(0, -1), 10) * 3600 * 24 * 1000;
-    await db.session.create({
-      data: {
-        userId: user.id,
-        token,
-        expiresAt: new Date(Date.now() + daySecs),
-      },
-    });
-
-    handleServiceResponse(
-      new ServiceResponse(
-        ResponseStatus.Success,
-        `login succesfull`,
-        {token},
-        StatusCodes.ACCEPTED
-      ),
-      res
-    );
   });
 
-  router.post("/logout", authenticate, async (req, res) => {
-    const token = (req as any)?.user?.token;
-    if (!token) {
-      return handleServiceResponse(
+  router.put("/reject/:requestId", authenticate, authorize([ROLES.ADMIN]), async (req, res) => {
+    const {requestId} = req.params;
+
+    if (!requestId) {
+      handleServiceResponse(
         new ServiceResponse(
           ResponseStatus.Failed,
-          "No token provided",
+          "request id must be defined",
           {},
-          StatusCodes.UNAUTHORIZED
+          StatusCodes.BAD_REQUEST
+        ),
+        res
+      );
+      return;
+    }
+
+    try {
+      const updated = await db.request.update({
+        where: {id: parseInt(requestId, 10)},
+        data: {status: REQUEST_STATUS.REJECTED},
+      });
+
+      handleServiceResponse(
+        new ServiceResponse(
+          ResponseStatus.Success,
+          `request rejected succesfully`,
+          {updated},
+          StatusCodes.ACCEPTED
+        ),
+        res
+      );
+    } catch (err: any) {
+      handleServiceResponse(
+        new ServiceResponse(
+          ResponseStatus.Failed,
+          `error when rejecting request`,
+          {message: err.message},
+          StatusCodes.INTERNAL_SERVER_ERROR
         ),
         res
       );
     }
-
-    await db.session.delete({where: {token}});
-
-    handleServiceResponse(
-      new ServiceResponse(ResponseStatus.Success, `logged out`, {}, StatusCodes.ACCEPTED),
-      res
-    );
   });
 
   return router;

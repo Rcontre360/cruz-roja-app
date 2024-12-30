@@ -18,6 +18,7 @@ model User {
   Activity  Activity[]
   Program   Program[]
   sessions  Session[]
+  Request   Request[]
 }
 
 model Activity {
@@ -43,12 +44,31 @@ model Session {
 }
 
 model Program {
-  id           Int      @id @default(autoincrement())
-  name         String   @unique
+  id           Int       @id @default(autoincrement())
+  name         String    @unique
   description  String
-  creationDate DateTime @default(now())
-  createdById  String   @db.Uuid
-  createdBy    User     @relation(fields: [createdById], references: [id])
+  creationDate DateTime  @default(now())
+  createdById  String    @db.Uuid
+  createdBy    User      @relation(fields: [createdById], references: [id])
+  Request      Request[]
+}
+
+model Request {
+  id           Int           @id @default(autoincrement())
+  subsidiary   String
+  country      String
+  programId    Int
+  status       RequestStatus @default(WAITING)
+  program      Program       @relation(fields: [programId], references: [id])
+  creationDate DateTime      @default(now())
+  userId       String        @db.Uuid
+  user         User          @relation(fields: [userId], references: [id])
+}
+
+enum RequestStatus {
+  WAITING
+  REJECTED
+  APPROVED
 }
 
 enum Role {

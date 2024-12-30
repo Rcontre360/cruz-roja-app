@@ -4,6 +4,7 @@ import helmet from "helmet";
 import {pino} from "pino";
 import {healthCheckRouter} from "./api/health/router";
 import {programsRouter} from "./api/programs/router";
+import {requestsRouter} from "./api/requests/router";
 
 import {usersRouter} from "./api/users/router";
 import {env} from "./common/env";
@@ -31,6 +32,7 @@ const v1 = express.Router();
 v1.use("/health", healthCheckRouter);
 v1.use("/users", usersRouter);
 v1.use("/programs", programsRouter);
+v1.use("/requests", requestsRouter);
 
 app.use("/v1", v1);
 
