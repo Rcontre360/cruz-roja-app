@@ -4,8 +4,8 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 import {env} from "@/common/env";
-import {authenticate} from "@/middleware/auth";
-import {ROLES} from "@/common/constants";
+import {authenticate, authorize} from "@/middleware/auth";
+import {REQUEST_STATUS, ROLES} from "@/common/constants";
 import {UserLoginBodySchema, UserRegistrationBodySchema} from "@/schemas/users";
 import {handleServiceResponse} from "@/common/responses";
 import {ResponseStatus, ServiceResponse} from "@/schemas/api";
@@ -27,6 +27,83 @@ export const usersRouter: Router = (() => {
       res
     );
   });
+
+  router.get("/hours", authenticate, async (req: Request, res: Response) => {
+    const userId = (req as any).user.id;
+    const allRequests = await db.request.findMany({
+      where: {userId, status: REQUEST_STATUS.APPROVED},
+    });
+
+    const responseByProgram = allRequests.reduce(
+      (acc, cur) => {
+        const start = cur.startDate.getTime();
+        const end = cur.endDate.getTime();
+
+        return {
+          ...acc,
+          [cur.programId]: (end - start) / 1000 + (acc[cur.programId] || 0), //remove milliseconds
+        };
+      },
+      {} as Record<string, number>
+    );
+
+    handleServiceResponse(
+      new ServiceResponse(
+        ResponseStatus.Success,
+        `success`,
+        responseByProgram,
+        StatusCodes.ACCEPTED
+      ),
+      res
+    );
+  });
+
+  router.get(
+    "/admin/hours/:userId",
+    authenticate,
+    authorize([ROLES.ADMIN]),
+    async (req: Request, res: Response) => {
+      const {userId} = req.params;
+
+      if (!userId) {
+        handleServiceResponse(
+          new ServiceResponse(
+            ResponseStatus.Failed,
+            "userId must be defined",
+            {},
+            StatusCodes.BAD_REQUEST
+          ),
+          res
+        );
+        return;
+      }
+
+      const allRequests = await db.request.findMany({where: {userId}});
+
+      const responseByProgram = allRequests.reduce(
+        (acc, cur) => {
+          const start = cur.startDate.getTime();
+          const end = cur.endDate.getTime();
+
+          return {
+            ...acc,
+            [cur.programId]: (end - start) / 1000 + (acc[cur.programId] || 0), //remove milliseconds
+          };
+        },
+        {} as Record<string, number>
+      );
+
+      handleServiceResponse(
+        new ServiceResponse(
+          ResponseStatus.Success,
+          `success`,
+          responseByProgram,
+          StatusCodes.ACCEPTED
+        ),
+        res
+      );
+    }
+  );
 
   router.post("/register", async (req, res) => {
     const parse = UserRegistrationBodySchema.safeParse(req.body);

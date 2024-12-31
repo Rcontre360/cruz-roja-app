@@ -2,6 +2,23 @@ import z from "zod";
 import validator from "validator";
 import {ROLES} from "@/common/constants";
 
+export const NumDate = z.number().refine(
+  (timestamp) => {
+    // Ensure it's a number
+    if (typeof timestamp !== "number" || !Number.isFinite(timestamp)) {
+      return false;
+    }
+
+    // Unix timestamps in seconds should be between Jan 1, 1970, and a reasonable upper limit
+    const minTimestamp = 1546540269; // Unix epoch start
+
+    return timestamp >= minTimestamp;
+  },
+  {
+    message: "Invalid date",
+  }
+);
+
 export const Email = z.string().refine((data) => validator.isEmail(data), {
   message: "Invalid email",
 });

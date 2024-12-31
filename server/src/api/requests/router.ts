@@ -54,9 +54,10 @@ export const requestsRouter: Router = (() => {
       return;
     }
 
-    const {country, subsidiary, programId} = CreateRequestBodySchema.parse(req.body);
+    const {country, subsidiary, programId, startDate, endDate} = CreateRequestBodySchema.parse(
+      req.body
+    );
     const userId = (req as any).user.id;
-    console.log("USER ", userId);
 
     try {
       const request = await db.request.create({
@@ -65,6 +66,8 @@ export const requestsRouter: Router = (() => {
           country,
           subsidiary,
           programId,
+          startDate: new Date(startDate * 1000),
+          endDate: new Date(endDate * 1000),
         },
       });
 

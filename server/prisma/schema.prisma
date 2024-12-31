@@ -58,6 +58,8 @@ model Request {
   subsidiary   String
   country      String
   programId    Int
+  startDate    DateTime      
+  endDate      DateTime     
   status       RequestStatus @default(WAITING)
   program      Program       @relation(fields: [programId], references: [id])
   creationDate DateTime      @default(now())
