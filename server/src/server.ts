@@ -2,6 +2,7 @@ import cors from "cors";
 import express, {Express} from "express";
 import helmet from "helmet";
 import {pino} from "pino";
+import {adminRouter} from "./api/admin/router";
 import {healthCheckRouter} from "./api/health/router";
 import {programsRouter} from "./api/programs/router";
 import {requestsRouter} from "./api/requests/router";
@@ -31,6 +32,7 @@ app.use(requestLogger({name: serviceName}));
 const v1 = express.Router();
 v1.use("/health", healthCheckRouter);
 v1.use("/users", usersRouter);
+v1.use("/admin", adminRouter);
 v1.use("/programs", programsRouter);
 v1.use("/requests", requestsRouter);
 

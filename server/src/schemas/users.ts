@@ -35,3 +35,22 @@ export const CurrentUserSchema = z.object({
   token: z.string(),
   role: UserRole,
 });
+
+export const UserModificationBodySchema = z.object({
+  email: Email.optional(),
+  name: z.string().optional(),
+  password: z.string().optional(),
+  surname: z.string().optional(),
+  age: Age.optional(),
+  country: z.string().optional(),
+  phone: Phone.optional(),
+  address: z.string().optional(),
+
+  disponibility: z.string().optional(),
+  education: z.string().optional(),
+  courses: z.string().optional(),
+  ingressDate: z.number().optional(),
+  program: z.string().optional(),
+  subsidiary: z.string().optional(),
+  dni: z.string().optional(),
+});

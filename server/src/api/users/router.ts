@@ -4,9 +4,9 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 import {env} from "@/common/env";
-import {authenticate, authorize} from "@/middleware/auth";
+import {authenticate} from "@/middleware/auth";
 import {REQUEST_STATUS, ROLES} from "@/common/constants";
-import {UserLoginBodySchema, UserRegistrationBodySchema} from "@/schemas/users";
+import {UserLoginBodySchema, UserModificationBodySchema, UserRegistrationBodySchema} from "@/schemas/users";
 import {handleServiceResponse} from "@/common/responses";
 import {ResponseStatus, ServiceResponse} from "@/schemas/api";
 import {db} from "@/db";
@@ -59,17 +59,17 @@ export const usersRouter: Router = (() => {
   });
 
   router.get(
-    "/admin/hours/:userId",
+    "/modify/user",
     authenticate,
-    authorize([ROLES.ADMIN]),
     async (req: Request, res: Response) => {
-      const {userId} = req.params;
+      const userId = (req as any).user.id as string;
+      const parse = UserModificationBodySchema.safeParse(req.body);
 
-      if (!userId) {
+      if (!parse.success) {
         handleServiceResponse(
           new ServiceResponse(
             ResponseStatus.Failed,
-            "userId must be defined",
+            `wrong body: invalid field ${parse.error.errors[0].path[0]}`,
             {},
             StatusCodes.BAD_REQUEST
           ),
@@ -78,32 +78,51 @@ export const usersRouter: Router = (() => {
         return;
       }
 
-      const allRequests = await db.request.findMany({where: {userId}});
+      if (!userId) {
+        handleServiceResponse(
+          new ServiceResponse(
+            ResponseStatus.Failed,
+            "user id is not defied",
+            {},
+            StatusCodes.BAD_REQUEST
+          ),
+          res
+        );
+        return;
+      }
 
-      const responseByProgram = allRequests.reduce(
-        (acc, cur) => {
-          const start = cur.startDate.getTime();
-          const end = cur.endDate.getTime();
+      const values = UserModificationBodySchema.parse(req.body);
 
-          return {
-            ...acc,
-            [cur.programId]: (end - start) / 1000 + (acc[cur.programId] || 0), //remove milliseconds
-          };
-        },
-        {} as Record<string, number>
-      );
+      if (values.password)
+        values.password = await bcrypt.hash(values.password, env.PASSWORD_SALT);
 
-      handleServiceResponse(
-        new ServiceResponse(
-          ResponseStatus.Success,
-          `success`,
-          responseByProgram,
-          StatusCodes.ACCEPTED
-        ),
-        res
-      );
-    }
-  );
+      try {
+        const user = await db.user.update({
+          where: {id: userId},
+          data: values,
+        });
+
+        handleServiceResponse(
+          new ServiceResponse(
+            ResponseStatus.Success,
+            `user modified succesfully`,
+            {user},
+            StatusCodes.ACCEPTED
+          ),
+          res
+        );
+      } catch (err: any) {
+        handleServiceResponse(
+          new ServiceResponse(
+            ResponseStatus.Failed,
+            `error when modifyig user`,
+            {message: err.message},
+            StatusCodes.INTERNAL_SERVER_ERROR
+          ),
+          res
+        );
+      }
+    })
 
   router.post("/register", async (req, res) => {
     const parse = UserRegistrationBodySchema.safeParse(req.body);
