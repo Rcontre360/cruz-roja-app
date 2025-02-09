@@ -19,41 +19,85 @@ const INIT_USER_STATE: UserState = {
 // Initialize API Client
 const api = new ApiClient()
 
-// Async Thunk for Login
 export const onLoginUser = createAsyncThunk(
   'users/login',
   async (loginBody: UserLoginBody, {rejectWithValue}) => {
     try {
       const response = await api.post<{token: string; user: UserRegistrationBody}>(
-        '/auth/login',
+        '/users/login',
         loginBody
       )
       api.setToken(response.data.token) // Save token for future requests
       return response.data
-    } catch (error: {message: string}) {
-      return rejectWithValue(error.message || 'Login failed')
+    } catch (error: {response: {data: {message: string}}}) {
+      return rejectWithValue(error.response.data.message)
     }
   }
 )
 
-// Async Thunk for Registration
+export const onLogout = createAsyncThunk('users/logout', async ({rejectWithValue}) => {
+  try {
+    const response = await api.post<{token: string; user: UserRegistrationBody}>('/users/logout')
+    api.setToken(response.data.token) // Save token for future requests
+    return response.data
+  } catch (error: {response: {data: {message: string}}}) {
+    return rejectWithValue(error.response.data.message)
+  }
+})
+
 export const onRegisterUser = createAsyncThunk(
   'users/register',
   async (register: UserRegistrationBody, {rejectWithValue}) => {
     try {
       const response = await api.post<UserRegistrationBody>('/users/register', register)
-      console.log('RESPONSE', response)
       return response.data
-    } catch (error: {message: string}) {
-      console.log('ERRRPR', error)
-      return rejectWithValue(error.message || 'Registration failed')
+    } catch (error: {response: {data: {message: string}}}) {
+      return rejectWithValue(error.response.data.message)
     }
   }
 )
 
+export const onModifyUser = createAsyncThunk(
+  'users/register',
+  async (register: UserRegistrationBody, {rejectWithValue}) => {
+    try {
+      const response = await api.post<UserRegistrationBody>('/users/modify/user', register)
+      return response.data
+    } catch (error: {response: {data: {message: string}}}) {
+      return rejectWithValue(error.response.data.message)
+    }
+  }
+)
+
+export const onGetProfile = createAsyncThunk('users/profile', async ({rejectWithValue}) => {
+  try {
+    const response = await api.get<{user: UserRegistrationBody}>('/users/profile', register)
+    return response.data
+  } catch (error: {response: {data: {message: string}}}) {
+    return rejectWithValue(error.response.data.message)
+  }
+})
+
+export const onGetHours = createAsyncThunk('users/hours', async ({rejectWithValue}) => {
+  try {
+    const response = await api.get<Record<string, number>>('/users/hours')
+    return response.data
+  } catch (error: {response: {data: {message: string}}}) {
+    return rejectWithValue(error.response.data.message)
+  }
+})
+
 const userSlice = createSlice({
   name: 'users',
   initialState: INIT_USER_STATE,
+  reducers: {
+    logout: (state) => {
+      state.user = null
+      state.token = ''
+      state.loading = false
+      state.error = null
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(onLoginUser.pending, (state) => {
@@ -75,6 +119,49 @@ const userSlice = createSlice({
       })
       .addCase(onRegisterUser.fulfilled, (state) => {
         state.loading = false
+      })
+      .addCase(onRegisterUser.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload as string
+      })
+      .addCase(onLogout.fulfilled, (state) => {
+        state.user = null
+        state.token = ''
+        state.loading = false
+        state.error = null
+      })
+      .addCase(onGetProfile.pending, (state) => {
+        state.loading = true
+      })
+      .addCase(onGetProfile.fulfilled, (state, action) => {
+        state.loading = false
+        state.user = action.payload
+      })
+      .addCase(onGetProfile.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload as string
+      })
+      .addCase(onGetHours.pending, (state) => {
+        state.loading = true
+      })
+      .addCase(onGetHours.fulfilled, (state, action) => {
+        state.loading = false
+        state.hours = action.payload
+      })
+      .addCase(onGetHours.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload as string
+      })
+      .addCase(onModifyUser.pending, (state) => {
+        state.loading = true
+      })
+      .addCase(onModifyUser.fulfilled, (state, action) => {
+        state.loading = false
+        state.user = action.payload
+      })
+      .addCase(onModifyUser.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload as string
       })
   },
 })
