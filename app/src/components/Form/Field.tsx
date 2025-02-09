@@ -1,4 +1,4 @@
-import { Children, cloneElement, ReactElement, ReactNode } from 'react'
+import {Children, cloneElement, ReactElement} from 'react'
 import Icon from '../Icon'
 
 type Props = {
@@ -9,10 +9,9 @@ type Props = {
   isBorderless?: boolean
   isTransparent?: boolean
   hasTextareaHeight?: boolean
-  children: ReactNode
 }
 
-const FormField = ({ icons = [], ...props }: Props) => {
+const FormField = ({icons = [], ...props}: React.PropsWithChildren<Props>) => {
   const childrenCount = Children.count(props.children)
 
   let elementWrapperClass = ''

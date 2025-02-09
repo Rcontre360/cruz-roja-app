@@ -1,20 +1,20 @@
 import React from 'react'
 import Link from 'next/link'
-import { useState } from 'react'
-import { mdiChevronUp, mdiChevronDown } from '@mdi/js'
+import {useState} from 'react'
+import {mdiChevronUp, mdiChevronDown} from '@mdi/js'
 import Divider from '../../Divider'
 import Icon from '../../Icon'
 import UserAvatarCurrentUser from '../../UserAvatar/CurrentUser'
 import NavBarMenuList from '../MenuList'
-import { useAppDispatch, useAppSelector } from '../../../stores/hooks'
-import { MenuNavBarItem } from '../../../interfaces'
-import { setDarkMode } from '../../../stores/darkModeSlice'
+import {useAppDispatch, useAppSelector} from '../../../stores/hooks'
+import {MenuNavBarItem} from '../../../interfaces'
+import {setDarkMode} from '../../../stores/darkModeSlice'
 
 type Props = {
   item: MenuNavBarItem
 }
 
-export default function NavBarItem({ item }: Props) {
+export default function NavBarItem({item}: React.Props<Props>) {
   const dispatch = useAppDispatch()
 
   const userName = useAppSelector((state) => state.main.userName)
@@ -45,19 +45,17 @@ export default function NavBarItem({ item }: Props) {
   const NavBarItemComponentContents = (
     <>
       <div
-        className={`flex items-center ${
-          item.menu
+        className={`flex items-center ${item.menu
             ? 'bg-gray-100 dark:bg-slate-800 lg:bg-transparent lg:dark:bg-transparent p-3 lg:p-0'
             : ''
-        }`}
+          }`}
         onClick={handleMenuClick}
       >
         {item.isCurrentUser && <UserAvatarCurrentUser className="w-6 h-6 mr-3 inline-flex" />}
         {item.icon && <Icon path={item.icon} className="transition-colors" />}
         <span
-          className={`px-2 transition-colors ${
-            item.isDesktopNoLabel && item.icon ? 'lg:hidden' : ''
-          }`}
+          className={`px-2 transition-colors ${item.isDesktopNoLabel && item.icon ? 'lg:hidden' : ''
+            }`}
         >
           {itemLabel}
         </span>
@@ -70,9 +68,8 @@ export default function NavBarItem({ item }: Props) {
       </div>
       {item.menu && (
         <div
-          className={`${
-            !isDropdownActive ? 'lg:hidden' : ''
-          } text-sm border-b border-gray-100 lg:border lg:bg-white lg:absolute lg:top-full lg:left-0 lg:min-w-full lg:z-20 lg:rounded-lg lg:shadow-lg lg:dark:bg-slate-800 dark:border-slate-700`}
+          className={`${!isDropdownActive ? 'lg:hidden' : ''
+            } text-sm border-b border-gray-100 lg:border lg:bg-white lg:absolute lg:top-full lg:left-0 lg:min-w-full lg:z-20 lg:rounded-lg lg:shadow-lg lg:dark:bg-slate-800 dark:border-slate-700`}
         >
           <NavBarMenuList menu={item.menu} />
         </div>

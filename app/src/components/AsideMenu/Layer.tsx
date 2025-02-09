@@ -1,18 +1,19 @@
 import React from 'react'
-import { mdiLogout, mdiClose } from '@mdi/js'
+import {mdiLogout, mdiClose} from '@mdi/js'
 import Icon from '../Icon'
 import AsideMenuItem from './Item'
 import AsideMenuList from './List'
-import { MenuAsideItem } from '../../interfaces'
-import { useAppSelector } from '../../stores/hooks'
+import {MenuAsideItem} from '../../interfaces'
+import {useAppSelector} from '../../stores/hooks'
 
 type Props = {
   menu: MenuAsideItem[]
   className?: string
   onAsideLgCloseClick: () => void
+  key?: unknown
 }
 
-export default function AsideMenuLayer({ menu, className = '', ...props }: Props) {
+export default function AsideMenuLayer({menu, className = '', ...props}: Props) {
   const darkMode = useAppSelector((state) => state.darkMode.isEnabled)
 
   const logoutItem: MenuAsideItem = {
@@ -48,9 +49,8 @@ export default function AsideMenuLayer({ menu, className = '', ...props }: Props
           </button>
         </div>
         <div
-          className={`flex-1 overflow-y-auto overflow-x-hidden ${
-            darkMode ? 'aside-scrollbars-[slate]' : 'aside-scrollbars'
-          }`}
+          className={`flex-1 overflow-y-auto overflow-x-hidden ${darkMode ? 'aside-scrollbars-[slate]' : 'aside-scrollbars'
+            }`}
         >
           <AsideMenuList menu={menu} />
         </div>

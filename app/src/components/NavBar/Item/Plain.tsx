@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react'
+import React, {ReactNode} from 'react'
 
 type Props = {
   display?: string
@@ -12,7 +12,7 @@ export default function NavBarItemPlain({
   useMargin = false,
   onClick,
   children,
-}: Props) {
+}: React.PropsWithChildren<Props>) {
   const classBase = 'items-center cursor-pointer dark:text-white dark:hover:text-slate-400'
   const classAddon = `${display} navbar-item-label ${useMargin ? 'my-2 mx-3' : 'py-2 px-3'}`
 

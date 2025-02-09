@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react'
+import React, {ReactNode} from 'react'
 import CardBoxComponentBody from './Component/Body'
 import CardBoxComponentFooter from './Component/Footer'
 
@@ -26,7 +26,7 @@ export default function CardBox({
   children,
   footer,
   onClick,
-}: Props) {
+}: React.PropsWithChildren<Props>) {
   const componentClass = [
     'bg-white flex',
     className,
@@ -41,7 +41,7 @@ export default function CardBox({
 
   return React.createElement(
     'div',
-    { className: componentClass.join(' '), onClick },
+    {className: componentClass.join(' '), onClick},
     hasComponentLayout ? (
       children
     ) : (

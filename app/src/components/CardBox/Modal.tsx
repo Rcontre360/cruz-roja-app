@@ -1,6 +1,5 @@
-import { mdiClose } from '@mdi/js'
-import { ReactNode } from 'react'
-import type { ColorButtonKey } from '../../interfaces'
+import {mdiClose} from '@mdi/js'
+import type {ColorButtonKey} from '../../interfaces'
 import Button from '../Button'
 import Buttons from '../Buttons'
 import CardBox from '.'
@@ -12,7 +11,6 @@ type Props = {
   buttonColor: ColorButtonKey
   buttonLabel: string
   isActive: boolean
-  children: ReactNode
   onConfirm: () => void
   onCancel?: () => void
 }
@@ -25,7 +23,7 @@ const CardBoxModal = ({
   children,
   onConfirm,
   onCancel,
-}: Props) => {
+}: React.PropsWithChildren<Props>) => {
   if (!isActive) {
     return null
   }

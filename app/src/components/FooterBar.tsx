@@ -1,12 +1,8 @@
-import React, { ReactNode } from 'react'
-import { containerMaxW } from '../config'
+import React from 'react'
+import {containerMaxW} from '../config'
 import JustboilLogo from './JustboilLogo'
 
-type Props = {
-  children: ReactNode
-}
-
-export default function FooterBar({ children }: Props) {
+export default function FooterBar({children}: React.PropsWithChildren<unknown>) {
   const year = new Date().getFullYear()
 
   return (
