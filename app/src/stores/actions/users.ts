@@ -20,7 +20,7 @@ const INIT_USER_STATE: UserState = {
 const api = new ApiClient()
 
 // Async Thunk for Login
-export const loginUser = createAsyncThunk(
+export const onLoginUser = createAsyncThunk(
   'users/login',
   async (loginBody: UserLoginBody, {rejectWithValue}) => {
     try {
@@ -37,13 +37,15 @@ export const loginUser = createAsyncThunk(
 )
 
 // Async Thunk for Registration
-export const registerUser = createAsyncThunk(
+export const onRegisterUser = createAsyncThunk(
   'users/register',
   async (register: UserRegistrationBody, {rejectWithValue}) => {
     try {
       const response = await api.post<UserRegistrationBody>('/users/register', register)
+      console.log('RESPONSE', response)
       return response.data
     } catch (error: {message: string}) {
+      console.log('ERRRPR', error)
       return rejectWithValue(error.message || 'Registration failed')
     }
   }
@@ -54,24 +56,24 @@ const userSlice = createSlice({
   initialState: INIT_USER_STATE,
   extraReducers: (builder) => {
     builder
-      .addCase(loginUser.pending, (state) => {
+      .addCase(onLoginUser.pending, (state) => {
         state.loading = true
         state.error = null
       })
-      .addCase(loginUser.fulfilled, (state, action) => {
+      .addCase(onLoginUser.fulfilled, (state, action) => {
         state.loading = false
         state.user = action.payload.user
         state.token = action.payload.token
       })
-      .addCase(loginUser.rejected, (state, action) => {
+      .addCase(onLoginUser.rejected, (state, action) => {
         state.loading = false
         state.error = action.payload as string
       })
-      .addCase(registerUser.pending, (state) => {
+      .addCase(onRegisterUser.pending, (state) => {
         state.loading = true
         state.error = null
       })
-      .addCase(registerUser.fulfilled, (state) => {
+      .addCase(onRegisterUser.fulfilled, (state) => {
         state.loading = false
       })
   },

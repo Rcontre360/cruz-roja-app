@@ -7,7 +7,7 @@ class ApiClient {
 
   constructor() {
     this.axiosInstance = axios.create({
-      baseURL: process.env.NEXT_LOCAL_SERVER_URL,
+      baseURL: process.env.NEXT_PUBLIC_SERVER_URL,
       headers: {
         'Content-Type': 'application/json',
       },
