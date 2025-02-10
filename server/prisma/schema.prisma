@@ -8,17 +8,32 @@ datasource db {
 }
 
 model User {
-  id        String     @id @default(uuid()) @db.Uuid
-  email     String     @unique
-  password  String
-  name      String
-  role      Role       @default(USER)
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  Activity  Activity[]
-  Program   Program[]
-  sessions  Session[]
-  Request   Request[]
+  id            String     @id @default(uuid()) @db.Uuid
+  email         String     @unique
+  password      String
+  name          String
+  surname       String
+  age           Int
+  country       String
+  phone         String
+  address       String
+  
+  disponibility String
+  education     String
+  courses       String
+  ingressDate   Int
+  program       String
+  subsidiary    String
+  dni           String @unique
+
+  role          Role       @default(USER)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  
+  Activity      Activity[]
+  Program       Program[]
+  sessions      Session[]
+  Request       Request[]
 }
 
 model Activity {

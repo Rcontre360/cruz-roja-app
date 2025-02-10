@@ -46,6 +46,7 @@
     "vitest": "^2.0.4"
   },
   "dependencies": {
+    "@prisma/client": "6.1.0",
     "axios": "^1.7.4",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
