@@ -1,10 +1,11 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit'
-import ApiClient from '../../api'
+import api from '../../api'
 import {UserLoginBody, UserRegistrationBody} from '../../schemas/users'
 
 type UserState = {
   user: UserRegistrationBody
   token: string
+  hours: Record<string, number>
   loading: boolean
   error: string
 }
@@ -13,11 +14,9 @@ const INIT_USER_STATE: UserState = {
   user: null,
   token: '',
   loading: false,
+  hours: {},
   error: '',
 }
-
-// Initialize API Client
-const api = new ApiClient()
 
 export const onLoginUser = createAsyncThunk(
   'users/login',
@@ -166,5 +165,4 @@ const userSlice = createSlice({
   },
 })
 
-export const {logout} = userSlice.actions
 export default userSlice.reducer

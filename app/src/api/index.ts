@@ -41,4 +41,6 @@ class ApiClient {
   }
 }
 
-export default ApiClient
+const api = new ApiClient()
+
+export default api
