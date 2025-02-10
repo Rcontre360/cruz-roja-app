@@ -1,18 +1,17 @@
-import React, { ReactNode, useState } from 'react'
-import { mdiClose, mdiDotsVertical } from '@mdi/js'
-import { containerMaxW } from '../../config'
+import React, {useState} from 'react'
+import {mdiClose, mdiDotsVertical} from '@mdi/js'
+import {containerMaxW} from '../../config'
 import Icon from '../Icon'
 import NavBarItemPlain from './Item/Plain'
 import NavBarMenuList from './MenuList'
-import { MenuNavBarItem } from '../../interfaces'
+import {MenuNavBarItem} from '../../interfaces'
 
 type Props = {
   menu: MenuNavBarItem[]
   className: string
-  children: ReactNode
 }
 
-export default function NavBar({ menu, className = '', children }: Props) {
+export default function NavBar({menu, className = '', children}: React.PropsWithChildren<Props>) {
   const [isMenuNavBarActive, setIsMenuNavBarActive] = useState(false)
 
   const handleMenuNavBarToggleClick = () => {
@@ -31,9 +30,8 @@ export default function NavBar({ menu, className = '', children }: Props) {
           </NavBarItemPlain>
         </div>
         <div
-          className={`${
-            isMenuNavBarActive ? 'block' : 'hidden'
-          } max-h-screen-menu overflow-y-auto lg:overflow-visible absolute w-screen top-14 left-0 bg-gray-50 shadow-lg lg:w-auto lg:flex lg:static lg:shadow-none dark:bg-slate-800`}
+          className={`${isMenuNavBarActive ? 'block' : 'hidden'
+            } max-h-screen-menu overflow-y-auto lg:overflow-visible absolute w-screen top-14 left-0 bg-gray-50 shadow-lg lg:w-auto lg:flex lg:static lg:shadow-none dark:bg-slate-800`}
         >
           <NavBarMenuList menu={menu} />
         </div>

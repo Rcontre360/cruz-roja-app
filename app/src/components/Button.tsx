@@ -1,8 +1,8 @@
 import React from 'react'
 import Link from 'next/link'
-import { getButtonColor } from '../colors'
+import {getButtonColor} from '../colors'
 import Icon from './Icon'
-import type { ColorButtonKey } from '../interfaces'
+import type {ColorButtonKey} from '../interfaces'
 
 type Props = {
   label?: string
@@ -38,7 +38,7 @@ export default function Button({
   disabled = false,
   roundedFull = false,
   onClick,
-}: Props) {
+}: React.PropsWithChildren<Props>) {
   const componentClass = [
     'inline-flex',
     'justify-center',
@@ -86,7 +86,7 @@ export default function Button({
 
   return React.createElement(
     asAnchor ? 'a' : 'button',
-    { className: componentClassString, type: type ?? 'button', target, disabled, onClick },
+    {className: componentClassString, type: type ?? 'button', target, disabled, onClick},
     componentChildren
   )
 }

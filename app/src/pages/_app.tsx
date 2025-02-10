@@ -1,12 +1,14 @@
 import React from 'react'
 import Script from 'next/script'
-import type { AppProps } from 'next/app'
-import type { ReactElement, ReactNode } from 'react'
-import type { NextPage } from 'next'
+import type {AppProps} from 'next/app'
+import type {ReactElement, ReactNode} from 'react'
+import type {NextPage} from 'next'
 import Head from 'next/head'
-import { store } from '../stores/store'
-import { Provider } from 'react-redux'
+import {store} from '../stores/store'
+import {Provider} from 'react-redux'
 import '../css/main.css'
+
+const ReduxProvider = Provider as unknown as React.Component
 
 export type NextPageWithLayout<P = Record<string, unknown>, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode
@@ -16,7 +18,7 @@ type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout
 }
 
-function MyApp({ Component, pageProps }: AppPropsWithLayout) {
+function MyApp({Component, pageProps}: AppPropsWithLayout) {
   // Use the layout defined at the page level, if available
   const getLayout = Component.getLayout || ((page) => page)
 
@@ -33,7 +35,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
   const imageHeight = '960'
 
   return (
-    <Provider store={store}>
+    <ReduxProvider store={store}>
       {getLayout(
         <>
           <Head>
@@ -75,7 +77,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
           <Component {...pageProps} />
         </>
       )}
-    </Provider>
+    </ReduxProvider>
   )
 }
 

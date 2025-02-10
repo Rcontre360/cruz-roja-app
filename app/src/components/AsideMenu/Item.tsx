@@ -1,24 +1,25 @@
-import React, { useEffect, useState } from 'react'
-import { mdiMinus, mdiPlus } from '@mdi/js'
+import React, {useEffect, useState} from 'react'
+import {mdiMinus, mdiPlus} from '@mdi/js'
 import Icon from '../Icon'
 import Link from 'next/link'
-import { getButtonColor } from '../../colors'
+import {getButtonColor} from '../../colors'
 import AsideMenuList from './List'
-import { MenuAsideItem } from '../../interfaces'
-import { useRouter } from 'next/router'
+import {MenuAsideItem} from '../../interfaces'
+import {useRouter} from 'next/router'
 
 type Props = {
   item: MenuAsideItem
   isDropdownList?: boolean
+  key?: unknown
 }
 
-const AsideMenuItem = ({ item, isDropdownList = false }: Props) => {
+const AsideMenuItem = ({item, isDropdownList = false}: Props) => {
   const [isLinkActive, setIsLinkActive] = useState(false)
   const [isDropdownActive, setIsDropdownActive] = useState(false)
 
   const activeClassAddon = !item.color && isLinkActive ? 'aside-menu-item-active font-bold' : ''
 
-  const { asPath, isReady } = useRouter()
+  const {asPath, isReady} = useRouter()
 
   useEffect(() => {
     if (item.href && isReady) {
@@ -36,9 +37,8 @@ const AsideMenuItem = ({ item, isDropdownList = false }: Props) => {
         <Icon path={item.icon} className={`flex-none ${activeClassAddon}`} w="w-16" size="18" />
       )}
       <span
-        className={`grow text-ellipsis line-clamp-1 ${
-          item.menu ? '' : 'pr-12'
-        } ${activeClassAddon}`}
+        className={`grow text-ellipsis line-clamp-1 ${item.menu ? '' : 'pr-12'
+          } ${activeClassAddon}`}
       >
         {item.label}
       </span>
@@ -75,9 +75,8 @@ const AsideMenuItem = ({ item, isDropdownList = false }: Props) => {
       {item.menu && (
         <AsideMenuList
           menu={item.menu}
-          className={`aside-menu-dropdown ${
-            isDropdownActive ? 'block dark:bg-slate-800/50' : 'hidden'
-          }`}
+          className={`aside-menu-dropdown ${isDropdownActive ? 'block dark:bg-slate-800/50' : 'hidden'
+            }`}
           isDropdownList
         />
       )}

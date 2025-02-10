@@ -6,7 +6,11 @@ import jwt from "jsonwebtoken";
 import {env} from "@/common/env";
 import {authenticate} from "@/middleware/auth";
 import {REQUEST_STATUS, ROLES} from "@/common/constants";
-import {UserLoginBodySchema, UserModificationBodySchema, UserRegistrationBodySchema} from "@/schemas/users";
+import {
+  UserLoginBodySchema,
+  UserModificationBodySchema,
+  UserRegistrationBodySchema,
+} from "@/schemas/users";
 import {handleServiceResponse} from "@/common/responses";
 import {ResponseStatus, ServiceResponse} from "@/schemas/api";
 import {db} from "@/db";
@@ -58,71 +62,67 @@ export const usersRouter: Router = (() => {
     );
   });
 
-  router.get(
-    "/modify/user",
-    authenticate,
-    async (req: Request, res: Response) => {
-      const userId = (req as any).user.id as string;
-      const parse = UserModificationBodySchema.safeParse(req.body);
+  router.get("/modify/user", authenticate, async (req: Request, res: Response) => {
+    const userId = (req as any).user.id as string;
+    const parse = UserModificationBodySchema.safeParse(req.body);
 
-      if (!parse.success) {
-        handleServiceResponse(
-          new ServiceResponse(
-            ResponseStatus.Failed,
-            `wrong body: invalid field ${parse.error.errors[0].path[0]}`,
-            {},
-            StatusCodes.BAD_REQUEST
-          ),
-          res
-        );
-        return;
-      }
+    if (!parse.success) {
+      handleServiceResponse(
+        new ServiceResponse(
+          ResponseStatus.Failed,
+          `wrong body: invalid field ${parse.error.errors[0].path[0]}`,
+          {},
+          StatusCodes.BAD_REQUEST
+        ),
+        res
+      );
+      return;
+    }
 
-      if (!userId) {
-        handleServiceResponse(
-          new ServiceResponse(
-            ResponseStatus.Failed,
-            "user id is not defied",
-            {},
-            StatusCodes.BAD_REQUEST
-          ),
-          res
-        );
-        return;
-      }
+    if (!userId) {
+      handleServiceResponse(
+        new ServiceResponse(
+          ResponseStatus.Failed,
+          "user id is not defied",
+          {},
+          StatusCodes.BAD_REQUEST
+        ),
+        res
+      );
+      return;
+    }
 
-      const values = UserModificationBodySchema.parse(req.body);
+    const values = UserModificationBodySchema.parse(req.body);
 
-      if (values.password)
-        values.password = await bcrypt.hash(values.password, env.PASSWORD_SALT);
+    if (values.password) values.password = await bcrypt.hash(values.password, env.PASSWORD_SALT);
 
-      try {
-        const user = await db.user.update({
-          where: {id: userId},
-          data: values,
-        });
+    try {
+      const user = await db.user.update({
+        where: {id: userId},
+        data: values,
+      });
 
-        handleServiceResponse(
-          new ServiceResponse(
-            ResponseStatus.Success,
-            `user modified succesfully`,
-            {user},
-            StatusCodes.ACCEPTED
-          ),
-          res
-        );
-      } catch (err: any) {
-        handleServiceResponse(
-          new ServiceResponse(
-            ResponseStatus.Failed,
-            `error when modifyig user`,
-            {message: err.message},
-            StatusCodes.INTERNAL_SERVER_ERROR
-          ),
-          res
-        );
-      }
-    })
+      handleServiceResponse(
+        new ServiceResponse(
+          ResponseStatus.Success,
+          `user modified succesfully`,
+          {user},
+          StatusCodes.ACCEPTED
+        ),
+        res
+      );
+    } catch (err: any) {
+      handleServiceResponse(
+        new ServiceResponse(
+          ResponseStatus.Failed,
+          `error when modifyig user`,
+          {message: err.message},
+          StatusCodes.INTERNAL_SERVER_ERROR
+        ),
+        res
+      );
+    }
+  });
 
   router.post("/register", async (req, res) => {
     const parse = UserRegistrationBodySchema.safeParse(req.body);
@@ -139,7 +139,8 @@ export const usersRouter: Router = (() => {
       return;
     }
 
-    const {email, password, name} = req.body;
+    const userReq = UserRegistrationBodySchema.parse(req.body);
+    const {email, password, name} = userReq;
 
     try {
       const hashedPassword = await bcrypt.hash(password, env.PASSWORD_SALT);
@@ -149,6 +150,19 @@ export const usersRouter: Router = (() => {
           password: hashedPassword,
           name,
           role: ROLES.ADMIN,
+
+          surname: userReq.surname,
+          age: userReq.age,
+          country: userReq.country,
+          phone: userReq.phone,
+          address: userReq.address,
+          disponibility: userReq.disponibility,
+          education: userReq.education,
+          courses: userReq.courses,
+          ingressDate: userReq.ingressDate,
+          program: userReq.program,
+          subsidiary: userReq.subsidiary,
+          dni: userReq.dni,
         },
       });
 
@@ -232,11 +246,12 @@ export const usersRouter: Router = (() => {
       },
     });
 
+    delete user?.password;
     handleServiceResponse(
       new ServiceResponse(
         ResponseStatus.Success,
         `login succesfull`,
-        {token},
+        {token, user},
         StatusCodes.ACCEPTED
       ),
       res

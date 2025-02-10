@@ -1,5 +1,5 @@
 import React from 'react'
-import { MenuAsideItem } from '../../interfaces'
+import {MenuAsideItem} from '../../interfaces'
 import AsideMenuItem from './Item'
 
 type Props = {
@@ -8,7 +8,7 @@ type Props = {
   className?: string
 }
 
-export default function AsideMenuList({ menu, isDropdownList = false, className = '' }: Props) {
+export default function AsideMenuList({menu, isDropdownList = false, className = ''}: Props) {
   return (
     <ul className={className}>
       {menu.map((item, index) => (
