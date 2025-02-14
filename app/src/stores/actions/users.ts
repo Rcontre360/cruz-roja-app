@@ -57,7 +57,7 @@ export const onRegisterUser = createAsyncThunk(
 )
 
 export const onModifyUser = createAsyncThunk(
-  'users/register',
+  'users/modify',
   async (register: UserRegistrationBody, {rejectWithValue}) => {
     try {
       const response = await api.post<UserRegistrationBody>('/users/modify/user', register)
