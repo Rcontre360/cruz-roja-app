@@ -1,79 +1,135 @@
+import {
+  mdiAccountMultiple,
+  mdiCartOutline,
+  mdiChartPie,
+  mdiChartTimelineVariant,
+  mdiGithub,
+  mdiMonitorCellphone,
+  mdiReload,
+} from '@mdi/js'
 import Head from 'next/head'
-import Image from 'next/image'
-import { useRouter } from 'next/router'
-import React, { ReactElement } from 'react'
-import CardBox from '../components/CardBox'
-import LayoutGuest from '../layouts/Guest'
+import React, { useState } from 'react'
+import type { ReactElement } from 'react'
+import Button from '../components/Button'
+import LayoutAuthenticated from '../layouts/Authenticated'
 import SectionMain from '../components/Section/Main'
-import { gradientBgPurplePink } from '../colors'
-import { appTitle } from '../config'
-import { useAppDispatch } from '../stores/hooks'
-import { setDarkMode } from '../stores/darkModeSlice'
+import SectionTitleLineWithButton from '../components/Section/TitleLineWithButton'
+import CardBoxWidget from '../components/CardBox/Widget'
+import { useSampleClients, useSampleTransactions } from '../hooks/sampleData'
+import CardBoxTransaction from '../components/CardBox/Transaction'
+import { Client, Transaction } from '../interfaces'
+import CardBoxClient from '../components/CardBox/Client'
+import SectionBannerStarOnGitHub from '../components/Section/Banner/StarOnGitHub'
+import CardBox from '../components/CardBox'
+import { sampleChartData } from '../components/ChartLineSample/config'
+import ChartLineSample from '../components/ChartLineSample'
+import NotificationBar from '../components/NotificationBar'
+import TableSampleClients from '../components/Table/SampleClients'
+import { getPageTitle } from '../config'
 
-const StyleSelectPage = () => {
-  const dispatch = useAppDispatch()
+const DashboardPage = () => {
+  const { clients } = useSampleClients()
+  const { transactions } = useSampleTransactions()
 
-  dispatch(setDarkMode(false))
+  const clientsListed = clients.slice(0, 4)
 
-  const styles = ['white', 'basic']
+  const [chartData, setChartData] = useState(sampleChartData())
 
-  const router = useRouter()
-
-  const handleStylePick = (e: React.MouseEvent, style: string) => {
+  const fillChartData = (e: React.MouseEvent) => {
     e.preventDefault()
 
-    document.documentElement.classList.forEach((token) => {
-      if (token.indexOf('style') === 0) {
-        document.documentElement.classList.replace(token, `style-${style}`)
-      }
-    })
-
-    router.push('/dashboard')
+    setChartData(sampleChartData())
   }
 
   return (
     <>
       <Head>
-        <title>{appTitle}</title>
+        <title>{getPageTitle('Dashboard')}</title>
       </Head>
-      <div className={`flex min-h-screen items-center justify-center ${gradientBgPurplePink}`}>
-        <SectionMain>
-          <h1 className="text-4xl md:text-5xl text-center text-white font-bold mt-12 mb-3 lg:mt-0">
-            Pick a style&hellip;
-          </h1>
-          <h2 className="text-xl md:text-xl text-center text-white mb-12">
-            Style switching with a single{' '}
-            <code className="px-1.5 py-0.5 rounded bg-white bg-opacity-20">action()</code>
-          </h2>
-          <div className="grid gap-6 grid-cols-1 lg:grid-cols-2 px-6 max-w-6xl mx-auto">
-            {styles.map((style) => (
-              <CardBox
-                key={style}
-                className="cursor-pointer bg-gray-50"
-                isHoverable
-                onClick={(e) => handleStylePick(e, style)}
-              >
-                <div className="mb-3 md:mb-6">
-                  <Image
-                    src={`https://static.justboil.me/templates/one/small/${style}-v3.png`}
-                    width={1280}
-                    height={720}
-                    alt={style}
-                  />
-                </div>
-                <h1 className="text-xl md:text-2xl font-black capitalize">{style}</h1>
-                <h2 className="text-lg md:text-xl">& Dark mode</h2>
-              </CardBox>
+      <SectionMain>
+        <SectionTitleLineWithButton icon={mdiChartTimelineVariant} title="Overview" main>
+          <Button
+            href="https://github.com/justboil/admin-one-react-tailwind"
+            target="_blank"
+            icon={mdiGithub}
+            label="Star on GitHub"
+            color="contrast"
+            roundedFull
+            small
+          />
+        </SectionTitleLineWithButton>
+
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 mb-6">
+          <CardBoxWidget
+            trendLabel="12%"
+            trendType="up"
+            trendColor="success"
+            icon={mdiAccountMultiple}
+            iconColor="success"
+            number={512}
+            label="Clients"
+          />
+          <CardBoxWidget
+            trendLabel="16%"
+            trendType="down"
+            trendColor="danger"
+            icon={mdiCartOutline}
+            iconColor="info"
+            number={7770}
+            numberPrefix="$"
+            label="Sales"
+          />
+          <CardBoxWidget
+            trendLabel="Overflow"
+            trendType="warning"
+            trendColor="warning"
+            icon={mdiChartTimelineVariant}
+            iconColor="danger"
+            number={256}
+            numberSuffix="%"
+            label="Performance"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <div className="flex flex-col justify-between">
+            {transactions.map((transaction: Transaction) => (
+              <CardBoxTransaction key={transaction.id} transaction={transaction} />
             ))}
           </div>
-        </SectionMain>
-      </div>
+          <div className="flex flex-col justify-between">
+            {clientsListed.map((client: Client) => (
+              <CardBoxClient key={client.id} client={client} />
+            ))}
+          </div>
+        </div>
+
+        <div className="my-6">
+          <SectionBannerStarOnGitHub />
+        </div>
+
+        <SectionTitleLineWithButton icon={mdiChartPie} title="Trends overview">
+          <Button icon={mdiReload} color="whiteDark" onClick={fillChartData} />
+        </SectionTitleLineWithButton>
+
+        <CardBox className="mb-6">{chartData && <ChartLineSample data={chartData} />}</CardBox>
+
+        <SectionTitleLineWithButton icon={mdiAccountMultiple} title="Clients" />
+
+        <NotificationBar color="info" icon={mdiMonitorCellphone}>
+          <b>Responsive table.</b> Collapses on mobile
+        </NotificationBar>
+
+        <CardBox hasTable>
+          <TableSampleClients />
+        </CardBox>
+      </SectionMain>
     </>
   )
 }
 
-StyleSelectPage.getLayout = function getLayout(page: ReactElement) {
-  return <LayoutGuest>{page}</LayoutGuest>
+DashboardPage.getLayout = function getLayout(page: ReactElement) {
+  return <LayoutAuthenticated>{page}</LayoutAuthenticated>
 }
 
-export default StyleSelectPage
+export default DashboardPage
