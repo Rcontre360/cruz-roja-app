@@ -179,7 +179,7 @@ export const usersRouter: Router = (() => {
       handleServiceResponse(
         new ServiceResponse(
           ResponseStatus.Failed,
-          `error when registering user`,
+          `error when registering user : ${err.message}`,
           {message: err.message},
           StatusCodes.INTERNAL_SERVER_ERROR
         ),

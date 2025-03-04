@@ -47,7 +47,6 @@ export const programsRouter: Router = (() => {
       return;
     }
 
-    const createdById = (req as any).user.id; // Assuming `req.user` is set by authentication middleware
     const {name, description} = req.body;
 
     try {
@@ -55,7 +54,6 @@ export const programsRouter: Router = (() => {
         data: {
           name,
           description,
-          createdById,
         },
       });
 

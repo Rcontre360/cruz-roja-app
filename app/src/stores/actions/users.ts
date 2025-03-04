@@ -11,7 +11,7 @@ type UserState = {
 }
 
 const INIT_USER_STATE: UserState = {
-  user: null,
+  user: {},
   token: '',
   loading: false,
   hours: {},

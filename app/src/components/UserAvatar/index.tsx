@@ -3,7 +3,7 @@
 // avatars.dicebear.com provides svg avatars
 // next/image needs dangerouslyAllowSVG option for that
 
-import React, { ReactNode } from 'react'
+import React, {ReactNode} from 'react'
 
 type Props = {
   username: string
@@ -13,7 +13,7 @@ type Props = {
 }
 
 export default function UserAvatar({
-  username,
+  username = '',
   api = 'avataaars',
   className = '',
   children,

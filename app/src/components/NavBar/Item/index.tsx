@@ -8,7 +8,6 @@ import UserAvatarCurrentUser from '../../UserAvatar/CurrentUser'
 import NavBarMenuList from '../MenuList'
 import {useAppDispatch, useAppSelector} from '../../../stores/hooks'
 import {MenuNavBarItem} from '../../../interfaces'
-import {setDarkMode} from '../../../stores/darkModeSlice'
 
 type Props = {
   item: MenuNavBarItem
@@ -16,8 +15,7 @@ type Props = {
 
 export default function NavBarItem({item}: React.Props<Props>) {
   const dispatch = useAppDispatch()
-
-  const userName = useAppSelector((state) => state.main.userName)
+  const userName = useAppSelector((state) => state.user.user ? state.user.user.name : "")
 
   const [isDropdownActive, setIsDropdownActive] = useState(false)
 
@@ -36,18 +34,14 @@ export default function NavBarItem({item}: React.Props<Props>) {
     if (item.menu) {
       setIsDropdownActive(!isDropdownActive)
     }
-
-    if (item.isToggleLightDark) {
-      dispatch(setDarkMode(null))
-    }
   }
 
   const NavBarItemComponentContents = (
     <>
       <div
         className={`flex items-center ${item.menu
-            ? 'bg-gray-100 dark:bg-slate-800 lg:bg-transparent lg:dark:bg-transparent p-3 lg:p-0'
-            : ''
+          ? 'bg-gray-100 dark:bg-slate-800 lg:bg-transparent lg:dark:bg-transparent p-3 lg:p-0'
+          : ''
           }`}
         onClick={handleMenuClick}
       >

@@ -1,135 +1,89 @@
-import {
-  mdiAccountMultiple,
-  mdiCartOutline,
-  mdiChartPie,
-  mdiChartTimelineVariant,
-  mdiGithub,
-  mdiMonitorCellphone,
-  mdiReload,
-} from '@mdi/js'
+import React from 'react'
+import type {ReactElement} from 'react'
 import Head from 'next/head'
-import React, { useState } from 'react'
-import type { ReactElement } from 'react'
 import Button from '../components/Button'
-import LayoutAuthenticated from '../layouts/Authenticated'
-import SectionMain from '../components/Section/Main'
-import SectionTitleLineWithButton from '../components/Section/TitleLineWithButton'
-import CardBoxWidget from '../components/CardBox/Widget'
-import { useSampleClients, useSampleTransactions } from '../hooks/sampleData'
-import CardBoxTransaction from '../components/CardBox/Transaction'
-import { Client, Transaction } from '../interfaces'
-import CardBoxClient from '../components/CardBox/Client'
-import SectionBannerStarOnGitHub from '../components/Section/Banner/StarOnGitHub'
 import CardBox from '../components/CardBox'
-import { sampleChartData } from '../components/ChartLineSample/config'
-import ChartLineSample from '../components/ChartLineSample'
-import NotificationBar from '../components/NotificationBar'
-import TableSampleClients from '../components/Table/SampleClients'
-import { getPageTitle } from '../config'
+import SectionFullScreen from '../components/Section/FullScreen'
+import LayoutGuest from '../layouts/Guest'
+import {Field, Form, Formik} from 'formik'
+import FormField from '../components/Form/Field'
+import FormCheckRadio from '../components/Form/CheckRadio'
+import Divider from '../components/Divider'
+import Buttons from '../components/Buttons'
+import {useRouter} from 'next/router'
+import {getPageTitle} from '../config'
+import {useAppDispatch, useAppSelector} from '../stores/hooks'
+import {onLoginUser, onRegisterUser} from '../stores/actions/users'
+import {UserRegistrationBody} from '../schemas/users'
 
-const DashboardPage = () => {
-  const { clients } = useSampleClients()
-  const { transactions } = useSampleTransactions()
+type LoginForm = {
+  login: string
+  password: string
+  remember: boolean
+}
 
-  const clientsListed = clients.slice(0, 4)
+const LoginPage = () => {
+  const router = useRouter()
+  const dispatch = useAppDispatch()
+  const user = useAppSelector(state => state.user)
 
-  const [chartData, setChartData] = useState(sampleChartData())
-
-  const fillChartData = (e: React.MouseEvent) => {
-    e.preventDefault()
-
-    setChartData(sampleChartData())
+  const handleSubmit = (formValues: LoginForm) => {
+    const user: UserRegistrationBody = {
+      email: formValues.login,
+      password: formValues.password,
+    }
+    dispatch(onLoginUser(user))
   }
+
+  const initialValues: LoginForm = {
+    login: '',
+    password: '',
+    remember: false,
+  }
+
+  React.useState(() => {
+    if (user.user.email || user.token)
+      router.push('/dashboard')
+  }, [user.user, user.token])
 
   return (
     <>
       <Head>
-        <title>{getPageTitle('Dashboard')}</title>
+        <title>{getPageTitle('Login')}</title>
       </Head>
-      <SectionMain>
-        <SectionTitleLineWithButton icon={mdiChartTimelineVariant} title="Overview" main>
-          <Button
-            href="https://github.com/justboil/admin-one-react-tailwind"
-            target="_blank"
-            icon={mdiGithub}
-            label="Star on GitHub"
-            color="contrast"
-            roundedFull
-            small
-          />
-        </SectionTitleLineWithButton>
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 mb-6">
-          <CardBoxWidget
-            trendLabel="12%"
-            trendType="up"
-            trendColor="success"
-            icon={mdiAccountMultiple}
-            iconColor="success"
-            number={512}
-            label="Clients"
-          />
-          <CardBoxWidget
-            trendLabel="16%"
-            trendType="down"
-            trendColor="danger"
-            icon={mdiCartOutline}
-            iconColor="info"
-            number={7770}
-            numberPrefix="$"
-            label="Sales"
-          />
-          <CardBoxWidget
-            trendLabel="Overflow"
-            trendType="warning"
-            trendColor="warning"
-            icon={mdiChartTimelineVariant}
-            iconColor="danger"
-            number={256}
-            numberSuffix="%"
-            label="Performance"
-          />
-        </div>
+      <SectionFullScreen bg="purplePink">
+        <CardBox className="w-11/12 md:w-7/12 lg:w-6/12 xl:w-4/12 shadow-2xl">
+          <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+            <Form>
+              <FormField label="Login" help="Please enter your login">
+                <Field name="login" />
+              </FormField>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          <div className="flex flex-col justify-between">
-            {transactions.map((transaction: Transaction) => (
-              <CardBoxTransaction key={transaction.id} transaction={transaction} />
-            ))}
-          </div>
-          <div className="flex flex-col justify-between">
-            {clientsListed.map((client: Client) => (
-              <CardBoxClient key={client.id} client={client} />
-            ))}
-          </div>
-        </div>
+              <FormField label="Password" help="Please enter your password">
+                <Field name="password" type="password" />
+              </FormField>
 
-        <div className="my-6">
-          <SectionBannerStarOnGitHub />
-        </div>
+              <FormCheckRadio type="checkbox" label="Remember">
+                <Field type="checkbox" name="remember" />
+              </FormCheckRadio>
 
-        <SectionTitleLineWithButton icon={mdiChartPie} title="Trends overview">
-          <Button icon={mdiReload} color="whiteDark" onClick={fillChartData} />
-        </SectionTitleLineWithButton>
+              <Divider />
 
-        <CardBox className="mb-6">{chartData && <ChartLineSample data={chartData} />}</CardBox>
-
-        <SectionTitleLineWithButton icon={mdiAccountMultiple} title="Clients" />
-
-        <NotificationBar color="info" icon={mdiMonitorCellphone}>
-          <b>Responsive table.</b> Collapses on mobile
-        </NotificationBar>
-
-        <CardBox hasTable>
-          <TableSampleClients />
+              <Buttons>
+                <Button type="submit" label="Login" color="info" />
+                <Button href="/register" label="Register" color="info" outline />
+              </Buttons>
+            </Form>
+          </Formik>
         </CardBox>
-      </SectionMain>
+      </SectionFullScreen>
     </>
   )
 }
 
-DashboardPage.getLayout = function getLayout(page: ReactElement) {
-  return <LayoutAuthenticated>{page}</LayoutAuthenticated>
+LoginPage.getLayout = function getLayout(page: ReactElement) {
+  return <LayoutGuest>{page}</LayoutGuest>
 }
 
-export default DashboardPage
+export default LoginPage

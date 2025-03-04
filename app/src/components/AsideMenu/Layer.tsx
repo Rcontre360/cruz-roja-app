@@ -14,7 +14,6 @@ type Props = {
 }
 
 export default function AsideMenuLayer({menu, className = '', ...props}: Props) {
-  const darkMode = useAppSelector((state) => state.darkMode.isEnabled)
 
   const logoutItem: MenuAsideItem = {
     label: 'Logout',
@@ -49,7 +48,7 @@ export default function AsideMenuLayer({menu, className = '', ...props}: Props) 
           </button>
         </div>
         <div
-          className={`flex-1 overflow-y-auto overflow-x-hidden ${darkMode ? 'aside-scrollbars-[slate]' : 'aside-scrollbars'
+          className={`flex-1 overflow-y-auto overflow-x-hidden  aside-scrollbars-[slate]'
             }`}
         >
           <AsideMenuList menu={menu} />

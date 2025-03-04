@@ -1,5 +1,5 @@
-import React, { ReactNode } from 'react'
-import { useAppSelector } from '../../stores/hooks'
+import React, {ReactNode} from 'react'
+import {useAppSelector} from '../../stores/hooks'
 import UserAvatar from '.'
 
 type Props = {
@@ -7,8 +7,8 @@ type Props = {
   children?: ReactNode
 }
 
-export default function UserAvatarCurrentUser({ className = '', children }: Props) {
-  const userEmail = useAppSelector((state) => state.main.userEmail)
+export default function UserAvatarCurrentUser({className = '', children}: Props) {
+  const userEmail = useAppSelector((state) => state.user.user.email)
 
   return (
     <UserAvatar username={userEmail} className={className}>

@@ -31,7 +31,6 @@ model User {
   updatedAt     DateTime   @updatedAt
   
   Activity      Activity[]
-  Program       Program[]
   sessions      Session[]
   Request       Request[]
 }
@@ -63,8 +62,6 @@ model Program {
   name         String    @unique
   description  String
   creationDate DateTime  @default(now())
-  createdById  String    @db.Uuid
-  createdBy    User      @relation(fields: [createdById], references: [id])
   Request      Request[]
 }
 
