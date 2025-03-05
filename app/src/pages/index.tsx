@@ -25,7 +25,7 @@ type LoginForm = {
 const LoginPage = () => {
   const router = useRouter()
   const dispatch = useAppDispatch()
-  const user = useAppSelector(state => state.user)
+  const user = useAppSelector((state) => state.user)
 
   const handleSubmit = (formValues: LoginForm) => {
     const user: UserRegistrationBody = {
@@ -33,6 +33,7 @@ const LoginPage = () => {
       password: formValues.password,
     }
     dispatch(onLoginUser(user))
+    router.push('/dashboard')
   }
 
   const initialValues: LoginForm = {
@@ -42,8 +43,7 @@ const LoginPage = () => {
   }
 
   React.useState(() => {
-    if (user.user.email || user.token)
-      router.push('/dashboard')
+    if (user.user.email || user.token) router.push('/dashboard')
   }, [user.user, user.token])
 
   return (
@@ -55,26 +55,28 @@ const LoginPage = () => {
       <SectionFullScreen bg="purplePink">
         <CardBox className="w-11/12 md:w-7/12 lg:w-6/12 xl:w-4/12 shadow-2xl">
           <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-            <Form>
-              <FormField label="Login" help="Please enter your login">
-                <Field name="login" />
-              </FormField>
+            {({isSubmitting}: {isSubmitting: boolean}) => (
+              <Form>
+                <FormField label="Login" help="Please enter your login">
+                  <Field name="login" />
+                </FormField>
 
-              <FormField label="Password" help="Please enter your password">
-                <Field name="password" type="password" />
-              </FormField>
+                <FormField label="Password" help="Please enter your password">
+                  <Field name="password" type="password" />
+                </FormField>
 
-              <FormCheckRadio type="checkbox" label="Remember">
-                <Field type="checkbox" name="remember" />
-              </FormCheckRadio>
+                <FormCheckRadio type="checkbox" label="Remember">
+                  <Field type="checkbox" name="remember" />
+                </FormCheckRadio>
 
-              <Divider />
+                <Divider />
 
-              <Buttons>
-                <Button type="submit" label="Login" color="info" />
-                <Button href="/register" label="Register" color="info" outline />
-              </Buttons>
-            </Form>
+                <Buttons>
+                  <Button type="submit" label="Login" color="info" disabled={isSubmitting} />
+                  <Button href="/register" label="Register" color="info" outline />
+                </Buttons>
+              </Form>
+            )}
           </Formik>
         </CardBox>
       </SectionFullScreen>
