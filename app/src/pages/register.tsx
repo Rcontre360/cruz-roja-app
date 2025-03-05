@@ -1,5 +1,6 @@
 import React from 'react'
 import type {ReactElement} from 'react'
+import {getNames} from 'country-list'
 import Head from 'next/head'
 import Button from '../components/Button'
 import CardBox from '../components/CardBox'
@@ -36,12 +37,32 @@ type LoginForm = {
   remember: boolean
 }
 
+const countries: Record<string, string> = getNames()
+const initialValues: LoginForm = {
+  nombre: '',
+  apellido: '',
+  correo: '',
+  contraseña: '',
+  disponibilidad: '',
+  direccion: '',
+  estudios: '',
+  cursos: '',
+  telefono: '',
+  fechaIngreso: '',
+  programa: '',
+  edad: 0,
+  pais: '',
+  filial: '',
+  ci: '',
+  remember: true,
+}
+
 const LoginPage = () => {
   const router = useRouter()
   const dispatch = useAppDispatch()
-  const programs = useAppSelector(state => state.programs)
+  const programs = useAppSelector((state) => state.programs)
 
-  const handleSubmit = (formValues: LoginForm) => {
+  const handleSubmit = async (formValues: LoginForm) => {
     const user: UserRegistrationBody = {
       email: formValues.correo,
       password: formValues.contraseña,
@@ -59,39 +80,19 @@ const LoginPage = () => {
       subsidiary: formValues.filial,
       dni: formValues.ci,
     }
-    dispatch(onRegisterUser(user))
+    await dispatch(onRegisterUser(user))
+    router.push('/')
   }
 
-  const initialValues: LoginForm = {
-    nombre: '',
-    apellido: '',
-    correo: '',
-    contraseña: '',
-    disponibilidad: '',
-    direccion: '',
-    estudios: '',
-    cursos: '',
-    telefono: '',
-    fechaIngreso: '',
-    programa: '',
-    edad: 0,
-    pais: '',
-    filial: '',
-    ci: '',
-    remember: true,
-  }
-
-  console.log(programs)
   React.useEffect(() => {
     try {
-      console.log('RAFAEL', programs)
       if (!programs.loaded && !programs.loading && !programs.error) {
-        dispatch(onGetPrograms());
+        dispatch(onGetPrograms())
       }
     } catch (err: any) {
-      console.log('ERR', err.message)
+      console.log('load programs err', err.message)
     }
-  }, [programs, dispatch]); // Dependencies: re-run if `myState` or `dispatch` changes
+  }, [programs, dispatch]) // Dependencies: re-run if `myState` or `dispatch` changes
 
   return (
     <>
@@ -102,97 +103,97 @@ const LoginPage = () => {
       <SectionFullScreen bg="purplePink">
         <CardBox className="w-11/12 md:w-10/12 lg:w-9/12 xl:w-8/12 shadow-2xl">
           <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-            <Form>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <FormField label="Nombre" help="Por favor ingrese su nombre">
-                  <Field name="nombre" className="w-full" />
-                </FormField>
+            {({isSubmitting}: {isSubmitting: boolean}) => (
+              <Form>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <FormField label="Nombre" help="Por favor ingrese su nombre">
+                    <Field name="nombre" className="w-full" />
+                  </FormField>
 
-                <FormField label="Apellido" help="Por favor ingrese su apellido">
-                  <Field name="apellido" className="w-full" />
-                </FormField>
+                  <FormField label="Apellido" help="Por favor ingrese su apellido">
+                    <Field name="apellido" className="w-full" />
+                  </FormField>
 
-                <FormField label="Correo" help="Por favor ingrese su correo">
-                  <Field name="correo" type="email" className="w-full" />
-                </FormField>
+                  <FormField label="Correo" help="Por favor ingrese su correo">
+                    <Field name="correo" type="email" className="w-full" />
+                  </FormField>
 
-                <FormField label="Contraseña" help="Por favor ingrese su contraseña">
-                  <Field name="contraseña" type="password" className="w-full" />
-                </FormField>
+                  <FormField label="Contraseña" help="Por favor ingrese su contraseña">
+                    <Field name="contraseña" type="password" className="w-full" />
+                  </FormField>
 
-                <FormField label="Disponibilidad Horarios" help="Seleccione su disponibilidad">
-                  <Field as="select" name="disponibilidad" className="w-full">
-                    <option value="">Seleccione...</option>
-                    <option value="full_time">Tiempo completo</option>
-                    <option value="part_time">Medio tiempo</option>
-                    <option value="both">Ambos</option>
-                  </Field>
-                </FormField>
+                  <FormField label="Disponibilidad Horarios" help="Seleccione su disponibilidad">
+                    <Field as="select" name="disponibilidad" className="w-full">
+                      <option value="full_time">Tiempo completo</option>
+                      <option value="part_time">Medio tiempo</option>
+                      <option value="both">Ambos</option>
+                    </Field>
+                  </FormField>
 
-                <FormField label="Dirección" help="Por favor ingrese su dirección">
-                  <Field name="direccion" className="w-full" />
-                </FormField>
+                  <FormField label="Dirección" help="Por favor ingrese su dirección">
+                    <Field name="direccion" className="w-full" />
+                  </FormField>
 
-                <FormField label="Estudios Académicos" help="Por favor ingrese sus estudios">
-                  <Field name="estudios" className="w-full" />
-                </FormField>
+                  <FormField label="Estudios Académicos" help="Por favor ingrese sus estudios">
+                    <Field name="estudios" className="w-full" />
+                  </FormField>
 
-                <FormField label="Cursos Especializados" help="Por favor ingrese sus cursos">
-                  <Field name="cursos" className="w-full" />
-                </FormField>
+                  <FormField label="Cursos Especializados" help="Por favor ingrese sus cursos">
+                    <Field name="cursos" className="w-full" />
+                  </FormField>
 
-                <FormField label="Teléfono" help="Por favor ingrese su teléfono">
-                  <Field name="telefono" type="tel" className="w-full" />
-                </FormField>
+                  <FormField label="Teléfono" help="Por favor ingrese su teléfono">
+                    <Field name="telefono" type="tel" className="w-full" />
+                  </FormField>
 
-                <FormField label="Fecha de Ingreso a la Cruz Roja" help="Seleccione la fecha">
-                  <Field name="fechaIngreso" type="date" className="w-full" />
-                </FormField>
+                  <FormField label="Fecha de Ingreso a la Cruz Roja" help="Seleccione la fecha">
+                    <Field name="fechaIngreso" type="date" className="w-full" />
+                  </FormField>
 
-                <FormField label="Programa de Voluntariado" help="Seleccione el programa">
-                  <Field as="select" name="programa" className="w-full">
-                    <option value="">Seleccione...</option>
-                    {
-                      programs.programs.map(p => (
-                        <option value={p.id} key={p.id}>{p.name}</option>
-                      ))
-                    }
-                  </Field>
-                </FormField>
+                  <FormField label="Programa de Voluntariado" help="Seleccione el programa">
+                    <Field as="select" name="programa" className="w-full">
+                      {programs.programs.map((p) => (
+                        <option value={p.id} key={p.id}>
+                          {p.name}
+                        </option>
+                      ))}
+                    </Field>
+                  </FormField>
 
-                <FormField label="Edad" help="Por favor ingrese su edad">
-                  <Field name="edad" type="number" className="w-full" />
-                </FormField>
+                  <FormField label="Edad" help="Por favor ingrese su edad">
+                    <Field name="edad" type="number" className="w-full" />
+                  </FormField>
 
-                <FormField label="País" help="Seleccione su país">
-                  <Field as="select" name="pais" className="w-full">
-                    <option value="">Seleccione...</option>
-                    <option value="venezuela">Venezuela</option>
-                    <option value="colombia">Colombia</option>
-                    <option value="argentina">Argentina</option>
-                    {/* Add more countries as needed */}
-                  </Field>
-                </FormField>
+                  <FormField label="País" help="Seleccione su país">
+                    <Field as="select" name="pais" className="w-full">
+                      {Object.entries(countries).map(([code, country]) => (
+                        <option value={code} key={code}>
+                          {country}
+                        </option>
+                      ))}
+                    </Field>
+                  </FormField>
 
-                <FormField label="Filial" help="Por favor ingrese su filial">
-                  <Field name="filial" className="w-full" />
-                </FormField>
+                  <FormField label="Filial" help="Por favor ingrese su filial">
+                    <Field name="filial" className="w-full" />
+                  </FormField>
 
-                <FormField label="CI" help="Por favor ingrese su cédula de identidad">
-                  <Field name="ci" className="w-full" />
-                </FormField>
-              </div>
+                  <FormField label="CI" help="Por favor ingrese su cédula de identidad">
+                    <Field name="ci" className="w-full" />
+                  </FormField>
+                </div>
 
-              <FormCheckRadio type="checkbox" label="Recordar">
-                <Field type="checkbox" name="remember" />
-              </FormCheckRadio>
+                <FormCheckRadio type="checkbox" label="Recordar">
+                  <Field type="checkbox" name="remember" />
+                </FormCheckRadio>
 
-              <Divider />
+                <Divider />
 
-              <Buttons>
-                <Button type="submit" label="Registrar" color="info" />
-              </Buttons>
-            </Form>
+                <Buttons>
+                  <Button type="submit" label="Registrar" color="info" disabled={isSubmitting} />
+                </Buttons>
+              </Form>
+            )}
           </Formik>
         </CardBox>
       </SectionFullScreen>
