@@ -4,7 +4,6 @@ import Icon from '../Icon'
 import AsideMenuItem from './Item'
 import AsideMenuList from './List'
 import {MenuAsideItem} from '../../interfaces'
-import {useAppSelector} from '../../stores/hooks'
 
 type Props = {
   menu: MenuAsideItem[]
@@ -14,7 +13,6 @@ type Props = {
 }
 
 export default function AsideMenuLayer({menu, className = '', ...props}: Props) {
-
   const logoutItem: MenuAsideItem = {
     label: 'Logout',
     icon: mdiLogout,
@@ -29,7 +27,7 @@ export default function AsideMenuLayer({menu, className = '', ...props}: Props) 
 
   return (
     <aside
-      className={`${className} zzz lg:py-2 lg:pl-2 w-60 fixed flex z-40 top-0 h-screen transition-position overflow-hidden`}
+      className={`${className} zzz lg:py-2 lg:pl-2 w-80 fixed flex z-40 top-0 h-screen transition-position overflow-hidden`}
     >
       <div
         className={`aside lg:rounded-2xl flex-1 flex flex-col overflow-hidden dark:bg-slate-900`}

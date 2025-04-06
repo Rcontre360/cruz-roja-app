@@ -81,6 +81,10 @@ const LoginPage = () => {
       dni: formValues.ci,
     }
     await dispatch(onRegisterUser(user))
+    router.push('/dashboard')
+  }
+
+  const goToLogin = () => {
     router.push('/')
   }
 
@@ -189,9 +193,14 @@ const LoginPage = () => {
 
                 <Divider />
 
-                <Buttons>
-                  <Button type="submit" label="Registrar" color="info" disabled={isSubmitting} />
-                </Buttons>
+                <div className="flex justify-between">
+                  <Buttons>
+                    <Button type="submit" label="Registrar" color="info" disabled={isSubmitting} />
+                  </Buttons>
+                  <Buttons>
+                    <Button label="Cancelar" color="lightDark" onClick={goToLogin} />
+                  </Buttons>
+                </div>
               </Form>
             )}
           </Formik>
