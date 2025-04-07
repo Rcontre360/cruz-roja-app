@@ -4,6 +4,9 @@ import Icon from '../Icon'
 import AsideMenuItem from './Item'
 import AsideMenuList from './List'
 import {MenuAsideItem} from '../../interfaces'
+import {useAppDispatch} from '../../stores/hooks'
+import {useRouter} from 'next/router'
+import {onLogout} from '../../stores/actions/users'
 
 type Props = {
   menu: MenuAsideItem[]
@@ -13,6 +16,9 @@ type Props = {
 }
 
 export default function AsideMenuLayer({menu, className = '', ...props}: Props) {
+  const dispatch = useAppDispatch()
+  const router = useRouter()
+
   const logoutItem: MenuAsideItem = {
     label: 'Logout',
     icon: mdiLogout,
@@ -23,6 +29,11 @@ export default function AsideMenuLayer({menu, className = '', ...props}: Props) 
   const handleAsideLgCloseClick = (e: React.MouseEvent) => {
     e.preventDefault()
     props.onAsideLgCloseClick()
+  }
+
+  const handleLogout = async () => {
+    await dispatch(onLogout())
+    router.push('/')
   }
 
   return (
@@ -52,7 +63,7 @@ export default function AsideMenuLayer({menu, className = '', ...props}: Props) 
           <AsideMenuList menu={menu} />
         </div>
         <ul>
-          <AsideMenuItem item={logoutItem} />
+          <AsideMenuItem item={logoutItem} onClick={handleLogout} />
         </ul>
       </div>
     </aside>

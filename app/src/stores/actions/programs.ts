@@ -1,5 +1,5 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit'
-import api from '../../api'
+import api from '../api'
 import {Program} from '../../schemas/programs'
 import {handleAPIERror} from './utils'
 

@@ -11,6 +11,7 @@ import FormField from '../components/Form/Field'
 import FormCheckRadio from '../components/Form/CheckRadio'
 import Divider from '../components/Divider'
 import Buttons from '../components/Buttons'
+import NotificationBar from '../components/NotificationBar'
 import {useRouter} from 'next/router'
 import {getPageTitle} from '../config'
 import {useAppDispatch, useAppSelector} from '../stores/hooks'
@@ -61,6 +62,7 @@ const LoginPage = () => {
   const router = useRouter()
   const dispatch = useAppDispatch()
   const programs = useAppSelector((state) => state.programs)
+  const {error} = useAppSelector((state) => state.user)
 
   const handleSubmit = async (formValues: LoginForm) => {
     const user: UserRegistrationBody = {
@@ -81,7 +83,7 @@ const LoginPage = () => {
       dni: formValues.ci,
     }
     await dispatch(onRegisterUser(user))
-    router.push('/dashboard')
+    router.push('/')
   }
 
   const goToLogin = () => {
@@ -97,6 +99,7 @@ const LoginPage = () => {
       console.log('load programs err', err.message)
     }
   }, [programs, dispatch]) // Dependencies: re-run if `myState` or `dispatch` changes
+  //
 
   return (
     <>
@@ -109,6 +112,7 @@ const LoginPage = () => {
           <Formik initialValues={initialValues} onSubmit={handleSubmit}>
             {({isSubmitting}: {isSubmitting: boolean}) => (
               <Form>
+                {error && <NotificationBar color="danger">{error}</NotificationBar>}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   <FormField label="Nombre" help="Por favor ingrese su nombre">
                     <Field name="nombre" className="w-full" />

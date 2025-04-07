@@ -27,8 +27,7 @@ const ProgramsPage = () => {
   }
 
   const handleDelete = async (row: Program) => {
-    console.log('DELETEE')
-    await dispatch(onDeleteProgram(row.id))
+    await dispatch(onDeleteProgram({programId: String(row.id)}))
   }
 
   React.useEffect(() => {

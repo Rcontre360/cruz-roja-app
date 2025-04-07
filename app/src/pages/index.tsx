@@ -10,10 +10,11 @@ import FormField from '../components/Form/Field'
 import FormCheckRadio from '../components/Form/CheckRadio'
 import Divider from '../components/Divider'
 import Buttons from '../components/Buttons'
+import NotificationBar from '../components/NotificationBar'
 import {useRouter} from 'next/router'
 import {getPageTitle} from '../config'
 import {useAppDispatch, useAppSelector} from '../stores/hooks'
-import {onLoginUser, onRegisterUser} from '../stores/actions/users'
+import {onLoginUser} from '../stores/actions/users'
 import {UserRegistrationBody} from '../schemas/users'
 
 type LoginForm = {
@@ -25,15 +26,14 @@ type LoginForm = {
 const LoginPage = () => {
   const router = useRouter()
   const dispatch = useAppDispatch()
-  const user = useAppSelector((state) => state.user)
+  const {user, token, error} = useAppSelector((state) => state.user)
 
-  const handleSubmit = (formValues: LoginForm) => {
+  const handleSubmit = async (formValues: LoginForm) => {
     const user: UserRegistrationBody = {
       email: formValues.login,
       password: formValues.password,
     }
-    dispatch(onLoginUser(user))
-    router.push('/dashboard')
+    await dispatch(onLoginUser(user))
   }
 
   const initialValues: LoginForm = {
@@ -42,9 +42,9 @@ const LoginPage = () => {
     remember: false,
   }
 
-  React.useState(() => {
-    if (user.user.email || user.token) router.push('/dashboard')
-  }, [user.user, user.token])
+  React.useEffect(() => {
+    if (user?.email || token) router.push('/dashboard')
+  }, [user, token, router])
 
   return (
     <>
@@ -53,6 +53,7 @@ const LoginPage = () => {
       </Head>
 
       <SectionFullScreen bg="purplePink">
+        {error && <NotificationBar color="danger">{error}</NotificationBar>}
         <CardBox className="w-11/12 md:w-7/12 lg:w-6/12 xl:w-4/12 shadow-2xl">
           <Formik initialValues={initialValues} onSubmit={handleSubmit}>
             {({isSubmitting}: {isSubmitting: boolean}) => (

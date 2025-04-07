@@ -11,9 +11,10 @@ type Props = {
   item: MenuAsideItem
   isDropdownList?: boolean
   key?: unknown
+  onClick?: () => void
 }
 
-const AsideMenuItem = ({item, isDropdownList = false}: Props) => {
+const AsideMenuItem = ({item, isDropdownList = false, onClick}: Props) => {
   const [isLinkActive, setIsLinkActive] = useState(false)
   const [isDropdownActive, setIsDropdownActive] = useState(false)
 
@@ -61,7 +62,7 @@ const AsideMenuItem = ({item, isDropdownList = false}: Props) => {
   ].join(' ')
 
   return (
-    <li>
+    <li onClick={onClick}>
       {item.href && (
         <Link href={item.href} target={item.target} className={componentClass}>
           {asideMenuItemInnerContents}
