@@ -25,7 +25,8 @@ type PinoCustomProps = {
 
 const requestLoggerBuild = (options?: Options): RequestHandler[] => {
   const pinoOptions: Options = {
-    enabled: env.isProduction,
+    //enabled: env.isProduction,
+    enabled: true,
     customProps: customProps as unknown as Options["customProps"],
     redact: [],
     genReqId,

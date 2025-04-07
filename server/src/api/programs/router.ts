@@ -96,8 +96,9 @@ export const programsRouter: Router = (() => {
     }
 
     try {
+      console.log("PROGRAMID", programId);
       await db.program.delete({
-        where: {id: parseInt(programId, 10)},
+        where: {id: Number(programId)},
       });
       handleServiceResponse(
         new ServiceResponse(

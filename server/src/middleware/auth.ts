@@ -2,7 +2,6 @@ import {env} from "@/common/env";
 import {handleServiceResponse} from "@/common/responses";
 import {db} from "@/db";
 import {ResponseStatus, ServiceResponse} from "@/schemas/api";
-import {CurrentUser} from "@/schemas/users";
 import {Request, Response, NextFunction} from "express";
 import {StatusCodes} from "http-status-codes";
 import jwt from "jsonwebtoken";
