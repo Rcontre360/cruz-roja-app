@@ -1,6 +1,6 @@
-import { mdiCheckDecagram } from '@mdi/js'
-import { Field, Form, Formik } from 'formik'
-import { useAppSelector } from '../../stores/hooks'
+import {mdiCheckDecagram} from '@mdi/js'
+import {Field, Form, Formik} from 'formik'
+import {useAppSelector} from '../../stores/hooks'
 import CardBox from '.'
 import FormCheckRadio from '../Form/CheckRadio'
 import PillTag from '../PillTag'
@@ -10,8 +10,8 @@ type Props = {
   className?: string
 }
 
-const CardBoxUser = ({ className }: Props) => {
-  const userName = useAppSelector((state) => state.main.userName)
+const CardBoxUser = ({className}: Props) => {
+  const userName = useAppSelector((state) => state.user.user.name)
 
   return (
     <CardBox className={className}>

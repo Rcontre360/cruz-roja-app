@@ -14,7 +14,7 @@ import {Program} from '../../schemas/programs'
 import {useRouter} from 'next/router'
 
 const ProgramsPage = () => {
-  const {loading, loaded, error, programs} = useAppSelector((state) => state.programs)
+  const {loaded, error, programs} = useAppSelector((state) => state.programs)
   const dispatch = useAppDispatch()
   const router = useRouter()
 
@@ -32,7 +32,7 @@ const ProgramsPage = () => {
 
   React.useEffect(() => {
     if (!loaded) initState()
-  }, [loaded])
+  }, [loaded, initState])
 
   return (
     <>

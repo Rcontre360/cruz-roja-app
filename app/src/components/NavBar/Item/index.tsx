@@ -6,7 +6,7 @@ import Divider from '../../Divider'
 import Icon from '../../Icon'
 import UserAvatarCurrentUser from '../../UserAvatar/CurrentUser'
 import NavBarMenuList from '../MenuList'
-import {useAppDispatch, useAppSelector} from '../../../stores/hooks'
+import {useAppSelector} from '../../../stores/hooks'
 import {MenuNavBarItem} from '../../../interfaces'
 
 type Props = {
@@ -14,8 +14,7 @@ type Props = {
 }
 
 export default function NavBarItem({item}: React.Props<Props>) {
-  const dispatch = useAppDispatch()
-  const userName = useAppSelector((state) => state.user.user ? state.user.user.name : "")
+  const userName = useAppSelector((state) => (state.user.user ? state.user.user.name : ''))
 
   const [isDropdownActive, setIsDropdownActive] = useState(false)
 
@@ -40,8 +39,8 @@ export default function NavBarItem({item}: React.Props<Props>) {
     <>
       <div
         className={`flex items-center ${item.menu
-          ? 'bg-gray-100 dark:bg-slate-800 lg:bg-transparent lg:dark:bg-transparent p-3 lg:p-0'
-          : ''
+            ? 'bg-gray-100 dark:bg-slate-800 lg:bg-transparent lg:dark:bg-transparent p-3 lg:p-0'
+            : ''
           }`}
         onClick={handleMenuClick}
       >

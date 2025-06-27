@@ -24,7 +24,7 @@ import {useRouter} from 'next/router'
 import {useDeleteConfirmation} from '../../components/DeleteConfirmationProvider'
 
 const RequestsPage = () => {
-  const {loading, loaded, error, requests} = useAppSelector((state) => state.requests)
+  const {loaded, error, requests} = useAppSelector((state) => state.requests)
   const dispatch = useAppDispatch()
   const router = useRouter()
   const {confirmDelete} = useDeleteConfirmation()
@@ -84,46 +84,15 @@ const RequestsPage = () => {
     return isNaN(date.getTime()) ? '—' : date.toISOString().split('T')[0]
   }
 
-  // Mock data de solicitudes
-  const mockRequests: Request[] = [
-    {
-      id: 1,
-      country: 'México',
-      subsidiary: 'CDMX',
-      programId: '101',
-      startDate: '2025-05-01',
-      endDate: '2025-05-30',
-      status: 'accepted',
-    },
-    {
-      id: 2,
-      country: 'Colombia',
-      subsidiary: 'Bogotá',
-      programId: '102',
-      startDate: '2025-06-01',
-      endDate: '2025-06-30',
-      status: 'rejected',
-    },
-    {
-      id: 3,
-      country: 'Argentina',
-      subsidiary: 'Buenos Aires',
-      programId: '103',
-      startDate: '2025-07-01',
-      endDate: '2025-07-30',
-      status: 'new',
-    },
-  ]
-
   // Filtrar las solicitudes según el estado
-  const filteredRequests = mockRequests.filter((request) => {
+  const filteredRequests = requests.filter((request) => {
     if (statusFilter === 'all') return true // Mostrar todas las solicitudes
     return request.status === statusFilter // Filtrar por estado
   })
 
   React.useEffect(() => {
     if (!loaded) initState()
-  }, [loaded])
+  }, [loaded, initState])
 
   return (
     <>
@@ -206,7 +175,7 @@ const RequestsPage = () => {
               },
             ]}
             perPage={10}
-            elements={requests} // Usamos las solicitudes filtradas
+            elements={filteredRequests} // Usamos las solicitudes filtradas
           />
         </CardBox>
       </SectionMain>

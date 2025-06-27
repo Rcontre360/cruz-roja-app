@@ -53,7 +53,7 @@ export const onCreateRequest = createAsyncThunk(
         },
       })
       return response.data
-    } catch (error: any) {
+    } catch (error: Error) {
       console.error('Error al crear la solicitud:', error.response?.data || error.message)
       return rejectWithValue(error.response?.data || 'Error al crear la solicitud')
     }
@@ -66,7 +66,7 @@ export const onEditRequest = createAsyncThunk(
     try {
       const response = await api.put(`/requests/edit/${args.id}`, args.request)
       return {id: args.id, request: response.data}
-    } catch (error: any) {
+    } catch (error: Error) {
       console.error('Error al crear la solicitud:', error.response?.data || error.message)
       return rejectWithValue(error.response?.data || 'Error al crear la solicitud')
     }
@@ -79,7 +79,7 @@ export const onApproveRejectRequest = createAsyncThunk(
     try {
       if (args.status === 'approve') return await api.put<Request>(`/requests/approve/${args.id}`)
       else return await api.put<Request>(`/requests/reject/${args.id}`)
-    } catch (error: any) {
+    } catch (error: Error) {
       console.error(
         'Error al approvar/rechazar la solicitud:',
         error.response?.data || error.message

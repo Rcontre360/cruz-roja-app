@@ -1,7 +1,6 @@
 import {
   mdiAccountCircle,
   mdiMonitor,
-  mdiGithub,
   mdiAlertCircle,
   mdiSquareEditOutline,
   mdiTable,
@@ -10,7 +9,6 @@ import {
   mdiResponsive,
   mdiListBox,
   mdiPalette,
-  mdiVuejs,
   mdiPlus,
   mdiEmail,
   mdiClock,

@@ -7,7 +7,7 @@ import Head from 'next/head'
 import {store} from '../stores/store'
 import {Provider} from 'react-redux'
 import '../css/main.css'
-import { DeleteConfirmationProvider } from '../components/DeleteConfirmationProvider'
+import {DeleteConfirmationProvider} from '../components/DeleteConfirmationProvider'
 
 export type NextPageWithLayout<P = Record<string, unknown>, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode
@@ -17,7 +17,7 @@ type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout
 }
 
-function MyApp({ Component, pageProps }: AppPropsWithLayout) {
+function MyApp({Component, pageProps}: AppPropsWithLayout) {
   const getLayout = Component.getLayout || ((page) => page)
 
   const title = `Admin One React Tailwind free`

@@ -27,10 +27,6 @@ const NewRequestPage = () => {
     endDate: '',
   }
 
-  const formatDateOnly = (date: Date) => {
-    return date.toISOString().split('T')[0] // Esto saca solo el "2025-05-01"
-  }
-
   const handleSubmit = async (values: typeof initialValues) => {
     if (
       !values.country ||

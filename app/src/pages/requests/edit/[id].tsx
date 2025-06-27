@@ -73,8 +73,9 @@ const EditRequestPage = () => {
       }
 
       await dispatch(onEditRequest({id: id as string, request: formattedValues}))
+      setSuccessMessage('Actualizacion exitosa')
 
-      router.push('/requests')
+      setTimeout(() => router.push('/requests'), 1000)
     } catch (err) {
       console.log('ERROR', err)
       setError('Hubo un error al editar la solicitud')

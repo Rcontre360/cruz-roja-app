@@ -24,7 +24,7 @@ import {useRouter} from 'next/router'
 import {useDeleteConfirmation} from '../../../components/DeleteConfirmationProvider'
 
 const RequestsPage = () => {
-  const {loading, loaded, error, requests} = useAppSelector((state) => state.requests)
+  const {loaded, error, requests} = useAppSelector((state) => state.requests)
   const dispatch = useAppDispatch()
   const router = useRouter()
   const {confirmDelete} = useDeleteConfirmation()
@@ -110,7 +110,7 @@ const RequestsPage = () => {
 
   useEffect(() => {
     if (!loaded) initState()
-  }, [loaded])
+  }, [loaded, initState])
 
   return (
     <>

@@ -95,7 +95,7 @@ const LoginPage = () => {
       if (!programs.loaded && !programs.loading && !programs.error) {
         dispatch(onGetPrograms())
       }
-    } catch (err: any) {
+    } catch (err: Error) {
       console.log('load programs err', err.message)
     }
   }, [programs, dispatch]) // Dependencies: re-run if `myState` or `dispatch` changes
