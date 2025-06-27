@@ -68,7 +68,7 @@ class ApiClient {
     return this.request<T>({method: 'GET', url, params})
   }
 
-  post<T>(url: string, data?: unknown) {
+  post<T>(url: string, data?: unknown, p0?: { headers: { 'Content-Type': string } }) {
     return this.request<T>({method: 'POST', url, data})
   }
 

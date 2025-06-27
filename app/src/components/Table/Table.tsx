@@ -6,6 +6,7 @@ type ColumnType =
   | {key: string; label: string; type: 'text'}
   | {key: string; label: string; type: 'number'; decimals?: number}
   | {key: string; label: string; type: 'icon'; icon: string; onClick: (row: any) => void}
+  | {key: string; label: string; type: 'custom'; render: (row: any) => React.ReactNode}
 
 type Props<T> = {
   perPage: number
@@ -52,10 +53,18 @@ const Table = <T extends Record<string, any>>({perPage, columns, elements}: Prop
                     </td>
                   )
                 }
+                if (col.type === 'custom') {
+                  return (
+                    <td key={col.key}>
+                      {col.render(el)}
+                    </td>
+                  )
+                }
                 return null
               })}
             </tr>
           ))}
+
         </tbody>
       </table>
 

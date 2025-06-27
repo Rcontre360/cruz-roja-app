@@ -32,18 +32,13 @@ const menuAside: MenuAsideItem[] = [
     icon: mdiAccountCircle,
     menu: [
       {
-        href: '/requests/new',
-        label: 'Nuevas Solicitudes',
+        href: '/requests/',
+        label: 'Listado de Solicitudes',
         icon: mdiListBox,
       },
       {
-        href: '/requests/accepted',
-        label: 'Aceptadas',
-        icon: mdiListBox,
-      },
-      {
-        href: '/requests/rejected',
-        label: 'Rechazadas',
+        href: '/requests/create/processed',
+        label: 'Procesadas',
         icon: mdiListBox,
       },
     ],
