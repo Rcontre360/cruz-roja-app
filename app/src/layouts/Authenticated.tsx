@@ -1,3 +1,5 @@
+"use client"
+
 import React, {useEffect} from 'react'
 import {useState} from 'react'
 import {mdiForwardburger, mdiBackburger, mdiMenu} from '@mdi/js'
@@ -9,7 +11,7 @@ import NavBarItemPlain from '../components/NavBar/Item/Plain'
 import AsideMenu from '../components/AsideMenu'
 import FormField from '../components/Form/Field'
 import {Field, Form, Formik} from 'formik'
-import {useRouter} from 'next/router'
+import {useRouter} from 'next/navigation'
 import {useAppDispatch, useAppSelector} from '../stores/hooks'
 import {onGetHours, onGetProfile} from '../stores/actions/users'
 import {onGetRequests} from '../stores/actions/requests'
@@ -22,22 +24,6 @@ export default function LayoutAuthenticated({children}: React.PropsWithChildren<
 
   const dispatch = useAppDispatch()
   const router = useRouter()
-
-  useEffect(() => {
-    const handleRouteChangeStart = () => {
-      setIsAsideMobileExpanded(false)
-      setIsAsideLgActive(false)
-    }
-
-    router.events.on('routeChangeStart', handleRouteChangeStart)
-
-    // If the component is unmounted, unsubscribe
-    // from the event with the `off` method:
-    return () => {
-      router.events.off('routeChangeStart', handleRouteChangeStart)
-    }
-  }, [router.events])
-
   const layoutAsidePadding = 'xl:pl-60'
 
   React.useEffect(() => {
