@@ -6,7 +6,7 @@ import {handleServiceResponse} from "@/common/responses";
 import {ResponseStatus, ServiceResponse} from "@/schemas/api";
 import {db} from "@/db";
 import {REQUEST_STATUS, ROLES} from "@/common/constants";
-import {CreateRequestBodySchema} from "@/schemas/requests";
+import {CreateRequestBodySchema, EditRequestBodySchema} from "@/schemas/requests";
 
 export const requestsRouter: Router = (() => {
   const router = express.Router();
@@ -66,6 +66,7 @@ export const requestsRouter: Router = (() => {
           country,
           subsidiary,
           programId,
+          status: REQUEST_STATUS.WAITING,
           startDate: new Date(startDate * 1000),
           endDate: new Date(endDate * 1000),
         },
@@ -127,6 +128,73 @@ export const requestsRouter: Router = (() => {
         new ServiceResponse(
           ResponseStatus.Failed,
           `error when deleting request`,
+          {message: err.message},
+          StatusCodes.INTERNAL_SERVER_ERROR
+        ),
+        res
+      );
+    }
+  });
+
+  router.put("/edit/:requestId", authenticate, authorize([ROLES.ADMIN]), async (req, res) => {
+    const {requestId} = req.params;
+
+    if (!requestId) {
+      handleServiceResponse(
+        new ServiceResponse(
+          ResponseStatus.Failed,
+          "request id must be defined",
+          {},
+          StatusCodes.BAD_REQUEST
+        ),
+        res
+      );
+      return;
+    }
+
+    const parse = EditRequestBodySchema.safeParse(req.body);
+    if (!parse.success) {
+      handleServiceResponse(
+        new ServiceResponse(
+          ResponseStatus.Failed,
+          `wrong body: invalid field ${parse.error.errors[0].path[0]}`,
+          {},
+          StatusCodes.BAD_REQUEST
+        ),
+        res
+      );
+      return;
+    }
+
+    const updates: any = {};
+    const {country, subsidiary, programId, startDate, endDate} = parse.data;
+
+    if (country) updates.country = country;
+    if (subsidiary) updates.subsidiary = subsidiary;
+    if (programId) updates.programId = programId;
+    if (startDate) updates.startDate = new Date(startDate * 1000);
+    if (endDate) updates.endDate = new Date(endDate * 1000);
+
+    try {
+      const updated = await db.request.update({
+        where: {id: parseInt(requestId, 10)},
+        data: updates,
+      });
+
+      handleServiceResponse(
+        new ServiceResponse(
+          ResponseStatus.Success,
+          `request updated successfully`,
+          {updated},
+          StatusCodes.ACCEPTED
+        ),
+        res
+      );
+    } catch (err: any) {
+      handleServiceResponse(
+        new ServiceResponse(
+          ResponseStatus.Failed,
+          `error when updating request`,
           {message: err.message},
           StatusCodes.INTERNAL_SERVER_ERROR
         ),

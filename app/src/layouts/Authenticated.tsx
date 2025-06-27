@@ -11,14 +11,16 @@ import FormField from '../components/Form/Field'
 import {Field, Form, Formik} from 'formik'
 import {useRouter} from 'next/router'
 import {useAppDispatch, useAppSelector} from '../stores/hooks'
-import {onGetProfile} from '../stores/actions/users'
+import {onGetHours, onGetProfile} from '../stores/actions/users'
+import {onGetRequests} from '../stores/actions/requests'
+import {onGetPrograms} from '../stores/actions/programs'
 
 export default function LayoutAuthenticated({children}: React.PropsWithChildren<unknown>) {
-  const dispatch = useAppDispatch()
   const {user, token, loaded} = useAppSelector((state) => state.user)
   const [isAsideMobileExpanded, setIsAsideMobileExpanded] = useState(false)
   const [isAsideLgActive, setIsAsideLgActive] = useState(false)
 
+  const dispatch = useAppDispatch()
   const router = useRouter()
 
   useEffect(() => {
@@ -44,6 +46,9 @@ export default function LayoutAuthenticated({children}: React.PropsWithChildren<
 
   React.useEffect(() => {
     dispatch(onGetProfile())
+    dispatch(onGetRequests())
+    dispatch(onGetPrograms())
+    dispatch(onGetHours())
   }, [dispatch])
 
   return (

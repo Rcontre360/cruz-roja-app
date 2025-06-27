@@ -11,7 +11,7 @@ export const env = cleanEnv(process.env, {
   CORS_ORIGIN: str({devDefault: testOnly("*")}),
   COMMON_RATE_LIMIT_MAX_REQUESTS: num({devDefault: 1000}),
   COMMON_RATE_LIMIT_WINDOW_MS: num({devDefault: 1000}),
-  PINO_LOG_LEVEL: str({devDefault: "debug", default: "info"}),
+  PINO_LOG_LEVEL: str({default: "info"}),
 
   POSTGRES_ENDPOINT: str({devDefault: ""}),
   JWT_SECRET: str({devDefault: ""}),
