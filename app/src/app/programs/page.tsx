@@ -1,3 +1,5 @@
+'use client'
+
 import Head from 'next/head'
 import React from 'react'
 import {mdiDelete, mdiMonitorCellphone, mdiPencil} from '@mdi/js'
@@ -10,7 +12,7 @@ import {getPageTitle} from '../../config'
 import {useAppDispatch, useAppSelector} from '../../stores/hooks'
 import {onDeleteProgram, onGetPrograms} from '../../stores/actions/programs'
 import {Program} from '../../schemas/programs'
-import {useRouter} from 'next/router'
+import {useRouter} from 'next/navigation'
 
 const ProgramsPage = () => {
   const {loaded, error, programs} = useAppSelector((state) => state.programs)

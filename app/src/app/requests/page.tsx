@@ -1,3 +1,5 @@
+'use client'
+
 import Head from 'next/head'
 import {
   mdiDelete,
@@ -10,7 +12,6 @@ import {
 } from '@mdi/js'
 import Icon from '@mdi/react'
 import CardBox from '../../components/CardBox'
-import LayoutAuthenticated from '../../layouts/Authenticated'
 import NotificationBar from '../../components/NotificationBar'
 import SectionMain from '../../components/Section/Main'
 import SectionTitle from '../../components/Section/Title'
@@ -19,8 +20,7 @@ import React, {useState} from 'react'
 import {getPageTitle} from '../../config'
 import {useAppDispatch, useAppSelector} from '../../stores/hooks'
 import {onDeleteRequest, onGetRequests} from '../../stores/actions/requests'
-import {Request} from '../../schemas/requests'
-import {useRouter} from 'next/router'
+import {useRouter} from 'next/navigation'
 import {useDeleteConfirmation} from '../../components/DeleteConfirmationProvider'
 
 const RequestsPage = () => {
@@ -35,11 +35,11 @@ const RequestsPage = () => {
     await dispatch(onGetRequests())
   }
 
-  const handleEdit = (row: Request) => {
+  const handleEdit = (row: {id: string}) => {
     router.push(`/requests/edit/${row.id}`)
   }
 
-  const handleDelete = async (row: Request) => {
+  const handleDelete = async (row: {id: string}) => {
     const confirmed = await confirmDelete(
       'Confirmar eliminación',
       `¿Estás seguro de que deseas eliminar la solicitud de "${String(row.fullName)}"?`
@@ -151,13 +151,13 @@ const RequestsPage = () => {
                 key: 'startDate',
                 label: 'Fecha de inicio',
                 type: 'custom',
-                render: (row: Request) => formatDate(row.startDate),
+                render: (row: {startDate: string}) => formatDate(row.startDate),
               }, // Formatear fecha de inicio
               {
                 key: 'endDate',
                 label: 'Fecha de fin',
                 type: 'custom',
-                render: (row: Request) => formatDate(row.endDate),
+                render: (row: {endDate: string}) => formatDate(row.endDate),
               }, // Formatear fecha de fin
               {key: 'edit', label: 'Editar', icon: mdiPencil, onClick: handleEdit, type: 'icon'},
               {
@@ -171,7 +171,7 @@ const RequestsPage = () => {
                 key: 'status',
                 label: 'Estado',
                 type: 'custom',
-                render: (row: Request) => renderStatus(row.status),
+                render: (row: {status: string}) => renderStatus(row.status),
               },
             ]}
             perPage={10}

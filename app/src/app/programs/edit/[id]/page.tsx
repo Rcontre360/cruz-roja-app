@@ -1,26 +1,27 @@
+'use client'
+
 import {Field, Form, Formik} from 'formik'
 import Head from 'next/head'
-import {ReactElement} from 'react'
-import NotificationBar from '../../../components/NotificationBar'
-import Button from '../../../components/Button'
-import Buttons from '../../../components/Buttons'
-import CardBox from '../../../components/CardBox'
-import FormField from '../../../components/Form/Field'
-import LayoutAuthenticated from '../../../layouts/Authenticated'
-import SectionMain from '../../../components/Section/Main'
-import SectionTitle from '../../../components/Section/Title'
-import {getPageTitle} from '../../../config'
-import {useAppDispatch, useAppSelector} from '../../../stores/hooks'
-import {onEditProgram} from '../../../stores/actions/programs'
-import {useRouter} from 'next/router'
+import NotificationBar from '@/components/NotificationBar'
+import Button from '@/components/Button'
+import Buttons from '@/components/Buttons'
+import CardBox from '@/components/CardBox'
+import FormField from '@/components/Form/Field'
+import SectionMain from '@/components/Section/Main'
+import SectionTitle from '@/components/Section/Title'
+import {getPageTitle} from '@/config'
+import {useAppDispatch, useAppSelector} from '@/stores/hooks'
+import {onEditProgram} from '@/stores/actions/programs'
+import {useParams, useRouter} from 'next/navigation'
 
 const EditProgramPage = () => {
   const {error} = useAppSelector((state) => state.programs)
   const dispatch = useAppDispatch()
   const router = useRouter()
+  const query = useParams()
 
   const handleSubmit = async (program: {description: string}) => {
-    await dispatch(onEditProgram({programId: router.query.id as string, fields: program}))
+    await dispatch(onEditProgram({programId: query.id.toString(), fields: program}))
     router.push('/programs')
   }
 

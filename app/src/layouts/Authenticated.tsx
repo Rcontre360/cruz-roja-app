@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 import React, {useEffect} from 'react'
 import {useState} from 'react'
@@ -11,11 +11,12 @@ import NavBarItemPlain from '../components/NavBar/Item/Plain'
 import AsideMenu from '../components/AsideMenu'
 import FormField from '../components/Form/Field'
 import {Field, Form, Formik} from 'formik'
-import {useRouter} from 'next/navigation'
+import {usePathname, useRouter} from 'next/navigation'
 import {useAppDispatch, useAppSelector} from '../stores/hooks'
 import {onGetHours, onGetProfile} from '../stores/actions/users'
 import {onGetRequests} from '../stores/actions/requests'
 import {onGetPrograms} from '../stores/actions/programs'
+import LayoutGuest from './Guest'
 
 export default function LayoutAuthenticated({children}: React.PropsWithChildren<unknown>) {
   const {user, token, loaded} = useAppSelector((state) => state.user)
@@ -24,10 +25,15 @@ export default function LayoutAuthenticated({children}: React.PropsWithChildren<
 
   const dispatch = useAppDispatch()
   const router = useRouter()
+  const path = usePathname()
   const layoutAsidePadding = 'xl:pl-60'
 
   React.useEffect(() => {
     if (!user.email && !token && loaded) router.push('/')
+  }, [user, token, loaded, router])
+
+  React.useEffect(() => {
+    if (user.email && token && loaded && path === '/') router.push('/dashboard')
   }, [user, token, loaded, router])
 
   React.useEffect(() => {
@@ -36,6 +42,8 @@ export default function LayoutAuthenticated({children}: React.PropsWithChildren<
     dispatch(onGetPrograms())
     dispatch(onGetHours())
   }, [dispatch])
+
+  if (!user.email && !token) return <LayoutGuest>{children}</LayoutGuest>
 
   return (
     <div className={`overflow-hidden lg:overflow-visible`}>

@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 import '../css/main.css'
 import {ReactNode} from 'react'
@@ -6,6 +6,7 @@ import {Provider} from 'react-redux'
 import {store} from '../stores/store'
 import Head from 'next/head'
 import LayoutAuthenticated from '@/layouts/Authenticated'
+import {DeleteConfirmationProvider} from '@/components/DeleteConfirmationProvider'
 
 export default function RootLayout({children}: {children: ReactNode}) {
   return (
@@ -15,12 +16,11 @@ export default function RootLayout({children}: {children: ReactNode}) {
       </Head>
       <body>
         <Provider store={store}>
-          <LayoutAuthenticated>
-            {children}
-          </LayoutAuthenticated>
+          <DeleteConfirmationProvider>
+            <LayoutAuthenticated>{children}</LayoutAuthenticated>
+          </DeleteConfirmationProvider>
         </Provider>
       </body>
     </html>
   )
 }
-

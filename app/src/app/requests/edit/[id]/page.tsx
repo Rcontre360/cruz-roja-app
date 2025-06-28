@@ -1,21 +1,22 @@
+'use client'
+
 import Head from 'next/head'
 import {useState} from 'react'
-import {useRouter} from 'next/router'
-import {useAppDispatch, useAppSelector} from '../../../stores/hooks'
-import {onEditRequest} from '../../../stores/actions/requests'
-import {getPageTitle} from '../../../config'
-import LayoutAuthenticated from '../../../layouts/Authenticated'
-import SectionMain from '../../../components/Section/Main'
-import SectionTitle from '../../../components/Section/Title'
-import NotificationBar from '../../../components/NotificationBar'
-import CardBox from '../../../components/CardBox'
-import FormField from '../../../components/Form/Field' // Componente de campo para encapsular los inputs
+import {useParams, useRouter} from 'next/navigation'
+import {useAppDispatch, useAppSelector} from '@/stores/hooks'
+import {onEditRequest} from '@/stores/actions/requests'
+import {getPageTitle} from '@/config'
+import SectionMain from '@/components/Section/Main'
+import SectionTitle from '@/components/Section/Title'
+import NotificationBar from '@/components/NotificationBar'
+import CardBox from '@/components/CardBox'
+import FormField from '@/components/Form/Field' // Componente de campo para encapsular los inputs
 import {Form, Field, Formik} from 'formik'
 
 const EditRequestPage = () => {
   const router = useRouter()
   const dispatch = useAppDispatch()
-  const {id} = router.query // Obtener el ID de la solicitud desde la URL
+  const {id} = useParams()
 
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
