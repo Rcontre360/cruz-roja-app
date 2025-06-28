@@ -1,8 +1,9 @@
+'use client'
+
 import Head from 'next/head'
 import React from 'react'
 import {mdiDelete, mdiMonitorCellphone, mdiPencil} from '@mdi/js'
 import CardBox from '../../components/CardBox'
-import LayoutAuthenticated from '../../layouts/Authenticated'
 import NotificationBar from '../../components/NotificationBar'
 import SectionMain from '../../components/Section/Main'
 import SectionTitle from '../../components/Section/Title'
@@ -11,7 +12,7 @@ import {getPageTitle} from '../../config'
 import {useAppDispatch, useAppSelector} from '../../stores/hooks'
 import {onDeleteProgram, onGetPrograms} from '../../stores/actions/programs'
 import {Program} from '../../schemas/programs'
-import {useRouter} from 'next/router'
+import {useRouter} from 'next/navigation'
 
 const ProgramsPage = () => {
   const {loaded, error, programs} = useAppSelector((state) => state.programs)
@@ -74,10 +75,6 @@ const ProgramsPage = () => {
       </SectionMain>
     </>
   )
-}
-
-ProgramsPage.getLayout = function getLayout(page: React.ReactElement) {
-  return <LayoutAuthenticated>{page}</LayoutAuthenticated>
 }
 
 export default ProgramsPage

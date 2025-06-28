@@ -1,13 +1,9 @@
-import {useRouter} from 'next/router'
-import React, {ReactNode} from 'react'
+import {useRouter} from 'next/navigation'
+import React from 'react'
 import {onGetProfile} from '../stores/actions/users'
 import {useAppDispatch, useAppSelector} from '../stores/hooks'
 
-type Props = {
-  children: ReactNode
-}
-
-export default function LayoutGuest({children}: Props) {
+export default function LayoutGuest({children}: React.PropsWithChildren<unknown>) {
   const router = useRouter()
   const dispatch = useAppDispatch()
   const {user, token, loaded} = useAppSelector((state) => state.user)

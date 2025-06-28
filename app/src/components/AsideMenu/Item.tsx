@@ -5,7 +5,7 @@ import Link from 'next/link'
 import {getButtonColor} from '../../colors'
 import AsideMenuList from './List'
 import {MenuAsideItem} from '../../interfaces'
-import {useRouter} from 'next/router'
+import {useRouter} from 'next/navigation'
 
 type Props = {
   item: MenuAsideItem

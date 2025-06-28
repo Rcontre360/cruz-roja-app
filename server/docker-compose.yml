@@ -11,20 +11,6 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
 
-  backend:
-    build: .
-    depends_on:
-      - database
-    environment:
-      DATABASE_URL: postgres://postgres:localpassword@database:5432/mydb
-      NODE_ENV: production
-    ports:
-      - "3000:3000"
-    volumes:
-      - .:/app
-      - /app/node_modules
-    restart: unless-stopped
-
 volumes:
   db_data:
 

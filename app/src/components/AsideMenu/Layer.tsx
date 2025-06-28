@@ -5,7 +5,7 @@ import AsideMenuItem from './Item'
 import AsideMenuList from './List'
 import {MenuAsideItem} from '../../interfaces'
 import {useAppDispatch} from '../../stores/hooks'
-import {useRouter} from 'next/router'
+import {useRouter} from 'next/navigation'
 import {onLogout} from '../../stores/actions/users'
 
 type Props = {

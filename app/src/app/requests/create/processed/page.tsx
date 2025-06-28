@@ -1,3 +1,5 @@
+'use client'
+
 import Head from 'next/head'
 import {
   mdiDelete,
@@ -9,19 +11,17 @@ import {
   mdiMinusCircle,
 } from '@mdi/js'
 import Icon from '@mdi/react'
-import CardBox from '../../../components/CardBox'
-import LayoutAuthenticated from '../../../layouts/Authenticated'
-import NotificationBar from '../../../components/NotificationBar'
-import SectionMain from '../../../components/Section/Main'
-import SectionTitle from '../../../components/Section/Title'
-import Table from '../../../components/Table/Table'
+import CardBox from '@/components/CardBox'
+import NotificationBar from '@/components/NotificationBar'
+import SectionMain from '@/components/Section/Main'
+import SectionTitle from '@/components/Section/Title'
+import Table from '@/components/Table/Table'
 import React, {useState, useEffect} from 'react'
-import {getPageTitle} from '../../../config'
-import {useAppDispatch, useAppSelector} from '../../../stores/hooks'
-import {onDeleteRequest, onGetRequests} from '../../../stores/actions/requests'
-import {Request} from '../../../schemas/requests'
-import {useRouter} from 'next/router'
-import {useDeleteConfirmation} from '../../../components/DeleteConfirmationProvider'
+import {getPageTitle} from '@/config'
+import {useAppDispatch, useAppSelector} from '@/stores/hooks'
+import {onDeleteRequest, onGetRequests} from '@/stores/actions/requests'
+import {useRouter} from 'next/navigation'
+import {useDeleteConfirmation} from '@/components/DeleteConfirmationProvider'
 
 const RequestsPage = () => {
   const {loaded, error, requests} = useAppSelector((state) => state.requests)
@@ -37,20 +37,19 @@ const RequestsPage = () => {
   }
 
   // Función para manejar edición
-  const handleEdit = (row: Request) => {
+  const handleEdit = (row: {id: string}) => {
     router.push(`/requests/edit/${row.id}`)
   }
 
   // Función para manejar eliminación
-  const handleDelete = async (row: Request) => {
+  const handleDelete = async (row: {id: string}) => {
     const confirmed = await confirmDelete(
       'Confirmar eliminación',
       `¿Estás seguro de que deseas eliminar la solicitud?`
     )
 
     if (confirmed) {
-      const updatedRequests = requests.filter((request) => request.id !== row.id) // Filtra la solicitud eliminada
-      dispatch(onDeleteRequest(updatedRequests)) // Despacha la acción de eliminar con los datos actualizados
+      dispatch(onDeleteRequest({requestId: row.id})) // Despacha la acción de eliminar con los datos actualizados
     }
   }
 
@@ -192,10 +191,6 @@ const RequestsPage = () => {
       </SectionMain>
     </>
   )
-}
-
-RequestsPage.getLayout = function getLayout(page: React.ReactElement) {
-  return <LayoutAuthenticated>{page}</LayoutAuthenticated>
 }
 
 export default RequestsPage

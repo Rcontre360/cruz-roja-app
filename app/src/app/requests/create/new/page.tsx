@@ -1,15 +1,16 @@
+'use client'
+
 import Head from 'next/head'
 import {useState} from 'react'
-import {useRouter} from 'next/router'
-import {useAppDispatch} from '../../../stores/hooks'
-import {onCreateRequest} from '../../../stores/actions/requests'
-import {getPageTitle} from '../../../config'
-import LayoutAuthenticated from '../../../layouts/Authenticated'
-import SectionMain from '../../../components/Section/Main'
-import SectionTitle from '../../../components/Section/Title'
-import NotificationBar from '../../../components/NotificationBar'
-import CardBox from '../../../components/CardBox'
-import FormField from '../../../components/Form/Field' // Componente de campo para encapsular los inputs
+import {useRouter} from 'next/navigation'
+import {useAppDispatch} from '@/stores/hooks'
+import {onCreateRequest} from '@/stores/actions/requests'
+import {getPageTitle} from '@/config'
+import SectionMain from '@/components/Section/Main'
+import SectionTitle from '@/components/Section/Title'
+import NotificationBar from '@/components/NotificationBar'
+import CardBox from '@/components/CardBox'
+import FormField from '@/components/Form/Field' // Componente de campo para encapsular los inputs
 import {Form, Field, Formik} from 'formik'
 
 const NewRequestPage = () => {
@@ -131,10 +132,6 @@ const NewRequestPage = () => {
       </CardBox>
     </SectionMain>
   )
-}
-
-NewRequestPage.getLayout = function getLayout(page: React.ReactElement) {
-  return <LayoutAuthenticated>{page}</LayoutAuthenticated>
 }
 
 export default NewRequestPage
