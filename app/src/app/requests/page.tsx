@@ -22,6 +22,16 @@ import {useAppDispatch, useAppSelector} from '../../stores/hooks'
 import {onDeleteRequest, onGetRequests} from '../../stores/actions/requests'
 import {useRouter} from 'next/navigation'
 import {useDeleteConfirmation} from '../../components/DeleteConfirmationProvider'
+import Button from '@/components/Button'
+import {Listbox, Transition} from '@headlessui/react'
+import {CheckIcon, ChevronsUpDownIcon} from 'lucide-react'
+
+const statusOptions = [
+  {id: 'all', name: 'Todos'},
+  {id: 'accepted', name: 'Aceptado'},
+  {id: 'rejected', name: 'Rechazado'},
+  {id: 'new', name: 'Nuevo'},
+]
 
 const RequestsPage = () => {
   const {loaded, error, requests} = useAppSelector((state) => state.requests)
@@ -29,7 +39,7 @@ const RequestsPage = () => {
   const router = useRouter()
   const {confirmDelete} = useDeleteConfirmation()
 
-  const [statusFilter, setStatusFilter] = useState('all') // Filtro de estado
+  const [statusFilter, setStatusFilter] = useState({id: 'all', name: 'Todos'}) // Filtro de estado
 
   const initState = async () => {
     await dispatch(onGetRequests())
@@ -86,8 +96,8 @@ const RequestsPage = () => {
 
   // Filtrar las solicitudes según el estado
   const filteredRequests = requests.filter((request) => {
-    if (statusFilter === 'all') return true // Mostrar todas las solicitudes
-    return request.status === statusFilter // Filtrar por estado
+    if (statusFilter.id === 'all') return true // Mostrar todas las solicitudes
+    return request.status === statusFilter.id // Filtrar por estado
   })
 
   React.useEffect(() => {
@@ -112,33 +122,63 @@ const RequestsPage = () => {
           </NotificationBar>
         )}
 
-        {/* Filtro de estado */}
-        <div className="mb-4">
-          <label htmlFor="statusFilter" className="mr-2">
-            Filtrar por estado:
-          </label>
-          <select
-            id="statusFilter"
-            className="form-control"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)} // Cambiar filtro
-          >
-            <option value="all">Todos</option>
-            <option value="accepted">Aceptado</option>
-            <option value="rejected">Rechazado</option>
-            <option value="new">Nuevo</option>
-          </select>
-        </div>
-
-        {/* Botón para crear una nueva solicitud */}
-        <div className="mb-4">
-          <button onClick={handleCreate} className="btn btn-primary">
-            {/* Icono correctamente insertado como SVG */}
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-              <path d={mdiPlus} />
-            </svg>
-            Crear nueva solicitud
-          </button>
+        <div className="flex justify-between items-end mb-4">
+          <div>
+            <label className="mr-2 text-white">Filtrar por estado:</label>
+            <Listbox
+              value={statusFilter.id}
+              onChange={(val) => setStatusFilter(statusOptions.find((op) => op.id === val))}
+            >
+              <div className="relative mt-1">
+                <Listbox.Button className="border border-gray-300 relative w-48 cursor-default rounded-lg py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-blue-300 sm:text-sm">
+                  <span className="block truncate">{statusFilter.name}</span>
+                  <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                    <ChevronsUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                  </span>
+                </Listbox.Button>
+                <Transition
+                  leave="transition ease-in duration-100"
+                  leaveFrom="opacity-100"
+                  leaveTo="opacity-0"
+                >
+                  <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm">
+                    {statusOptions.map((option) => (
+                      <Listbox.Option
+                        key={option.id}
+                        className={({active}) =>
+                          `relative cursor-default select-none py-2 pl-10 pr-4 ${active ? 'bg-blue-100 text-blue-900' : 'text-gray-900'
+                          }`
+                        }
+                        value={option.id}
+                      >
+                        {({selected}) => (
+                          <>
+                            <span
+                              className={`block truncate ${selected ? 'font-medium' : 'font-normal'
+                                }`}
+                            >
+                              {option.name}
+                            </span>
+                            {selected ? (
+                              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-blue-600">
+                                <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                              </span>
+                            ) : null}
+                          </>
+                        )}
+                      </Listbox.Option>
+                    ))}
+                  </Listbox.Options>
+                </Transition>
+              </div>
+            </Listbox>
+          </div>
+          <Button
+            label="Crear nueva solicitud"
+            className="max-h-10"
+            color="info"
+            onClick={handleCreate}
+          />
         </div>
 
         <CardBox className="mb-6" hasTable>

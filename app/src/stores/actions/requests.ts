@@ -64,8 +64,11 @@ export const onEditRequest = createAsyncThunk(
   'requests/edit',
   async (args: {id: string; request: EditRequestBody}, {rejectWithValue}) => {
     try {
-      const response = await api.put(`/requests/edit/${args.id}`, args.request)
-      return {id: args.id, request: response.data}
+      const response = await api.put<{updated: Request}>(
+        `/requests/edit/${args.id}`,
+        args.request
+      )
+      return {id: args.id, request: response.data.updated}
     } catch (error: Error) {
       console.error('Error al crear la solicitud:', error.response?.data || error.message)
       return rejectWithValue(error.response?.data || 'Error al crear la solicitud')
@@ -113,12 +116,15 @@ const requestSlice = createSlice({
 
       // Crear una solicitud
       .addCase(onCreateRequest.fulfilled, (state, action) => {
-        state.requests.push(action.payload) // Añadir la nueva solicitud al estado
+        state.requests.push(action.payload.request) // Añadir la nueva solicitud al estado
+      })
+      .addCase(onDeleteRequest.fulfilled, (state, action) => {
+        state.requests = state.requests.filter((req) => req.id === action.payload.requestId)
       })
       // Editar una solicitud
       .addCase(onEditRequest.fulfilled, (state, action) => {
         state.requests = state.requests.map((req) =>
-          req.id === action.payload.id ? action.payload.request : req
+          req.id == action.payload.id ? action.payload.request : req
         )
       })
       // Editar una solicitud
