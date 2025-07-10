@@ -18,3 +18,5 @@ export const EditRequestBodySchema = z.object({
   startDate: z.number().optional(), // Unix timestamp
   endDate: z.number().optional(), // Unix timestamp
 })
+
+export type Request = CreateRequestBody & {id: string; status: string; user: any}

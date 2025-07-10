@@ -1,7 +1,7 @@
-import { mdiClose } from '@mdi/js'
-import React, { ReactNode, useState } from 'react'
-import { ColorKey } from '../interfaces'
-import { colorsBgLight, colorsOutline } from '../colors'
+import {mdiClose} from '@mdi/js'
+import React, {ReactNode, useState} from 'react'
+import {ColorKey} from '../interfaces'
+import {colorsBgLight, colorsOutline} from '../colors'
 import Button from './Button'
 import Icon from './Icon'
 
@@ -13,7 +13,11 @@ type Props = {
   button?: ReactNode
 }
 
-const NotificationBar = ({ outline = false, children, ...props }: Props) => {
+const NotificationBar: React.FunctionComponent<Props> = ({
+  outline = false,
+  children,
+  ...props
+}) => {
   const componentColorClass = outline ? colorsOutline[props.color] : colorsBgLight[props.color]
 
   const [isDismissed, setIsDismissed] = useState(false)

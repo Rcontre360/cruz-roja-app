@@ -1,10 +1,8 @@
-import React, { ReactNode } from 'react'
-import { containerMaxW } from '../../config'
+import React from 'react'
+import {containerMaxW} from '../../config'
 
-type Props = {
-  children: ReactNode
-}
-
-export default function SectionMain({ children }: Props) {
+export const SectionMain: React.FC = ({children}) => {
   return <section className={`p-6 ${containerMaxW}`}>{children}</section>
 }
+
+export default SectionMain

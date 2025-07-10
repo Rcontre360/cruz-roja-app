@@ -45,7 +45,7 @@ const LoginPage = () => {
   }, [user, token, router])
 
   return (
-    <SectionFullScreen bg="purplePink">
+    <SectionFullScreen>
       <CardBox className="w-11/12 md:w-7/12 lg:w-6/12 xl:w-4/12 shadow-2xl">
         {error && <NotificationBar color="danger">{error}</NotificationBar>}
         <Formik initialValues={initialValues} onSubmit={handleSubmit}>

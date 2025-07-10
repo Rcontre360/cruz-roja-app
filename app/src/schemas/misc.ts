@@ -1,6 +1,6 @@
 import z from 'zod'
 import validator from 'validator'
-import {ROLES} from '@/common/constants'
+import { ROLES } from '@/common/constants'
 
 export const NumDate = z.number().refine(
   (timestamp) => {
@@ -31,6 +31,8 @@ export const Age = z.number().refine((data) => data >= 10 && data <= 100, {
   message: 'Invalid age. Must be between 10 and 100',
 })
 
-export const UserRole = z.string().refine((data) => Object.values(ROLES).includes(data), {
-  message: 'Invalid role',
-})
+export const UserRole = z
+  .string()
+  .refine((data) => Object.values(ROLES).includes(data as 'ADMIN'), {
+    message: 'Invalid role',
+  })

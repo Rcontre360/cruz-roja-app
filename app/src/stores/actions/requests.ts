@@ -47,14 +47,9 @@ export const onCreateRequest = createAsyncThunk(
   'requests/create',
   async (newRequestData: CreateRequestBody, {rejectWithValue}) => {
     try {
-      const response = await api.post('/requests/create', newRequestData, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
+      const response = await api.post<{request: Request}>('/requests/create', newRequestData)
       return response.data
-    } catch (error: Error) {
-      console.error('Error al crear la solicitud:', error.response?.data || error.message)
+    } catch (error: any) {
       return rejectWithValue(error.response?.data || 'Error al crear la solicitud')
     }
   }
@@ -69,7 +64,7 @@ export const onEditRequest = createAsyncThunk(
         args.request
       )
       return {id: args.id, request: response.data.updated}
-    } catch (error: Error) {
+    } catch (error: any) {
       console.error('Error al crear la solicitud:', error.response?.data || error.message)
       return rejectWithValue(error.response?.data || 'Error al crear la solicitud')
     }
@@ -84,7 +79,7 @@ export const onApproveRejectRequest = createAsyncThunk(
       if (args.status === 'approve') res = await api.put<Request>(`/requests/approve/${args.id}`)
       else res = api.put<Request>(`/requests/reject/${args.id}`)
       return res.data.updated
-    } catch (error: Error) {
+    } catch (error: any) {
       return rejectWithValue(error.response?.data || 'Error al crear la solicitud')
     }
   }

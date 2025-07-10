@@ -63,10 +63,10 @@ const RequestsPage = () => {
     router.push(`/requests/edit/${row.id}`)
   }
 
-  const handleDelete = async (row: {id: string}) => {
+  const handleDelete = async (row: {id: string; name: string}) => {
     const confirmed = await confirmDelete(
       'Confirmar eliminación',
-      `¿Estás seguro de que deseas eliminar la solicitud de "${String(row.fullName)}"?`
+      `¿Estás seguro de que deseas eliminar la solicitud de "${String(row.name)}"?`
     )
 
     if (confirmed) {

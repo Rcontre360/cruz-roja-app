@@ -1,13 +1,12 @@
-import { ReactNode } from 'react'
+import React from 'react'
 
 type Props = {
-  children: ReactNode
   type: 'checkbox' | 'radio' | 'switch'
   label?: string
   className?: string
 }
 
-const FormCheckRadio = (props: Props) => {
+const FormCheckRadio: React.FunctionComponent<React.PropsWithChildren<Props>> = (props) => {
   return (
     <label className={`${props.type} ${props.className}`}>
       {props.children}

@@ -1,7 +1,7 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit'
 import api from '../api'
 import {Program} from '../../schemas/programs'
-import {handleAPIERror} from './utils'
+import {handleAPIError} from './utils'
 
 type ProgramState = {
   programs: Program[]
@@ -23,7 +23,7 @@ export const onGetPrograms = createAsyncThunk('programs/all', async (_, {rejectW
 
     return response.data
   } catch (error) {
-    return handleAPIERror(error, rejectWithValue)
+    return handleAPIError(error, rejectWithValue)
   }
 })
 
@@ -38,7 +38,7 @@ export const onEditProgram = createAsyncThunk(
 
       return {programId, program: response.data}
     } catch (error) {
-      return handleAPIERror(error, rejectWithValue)
+      return handleAPIError(error, rejectWithValue)
     }
   }
 )
@@ -51,7 +51,7 @@ export const onDeleteProgram = createAsyncThunk(
 
       return {programId}
     } catch (error) {
-      return handleAPIERror(error, rejectWithValue)
+      return handleAPIError(error, rejectWithValue)
     }
   }
 )
@@ -104,7 +104,9 @@ const programSlice = createSlice({
         state.loading = false
         state.loaded = true
 
-        state.programs = state.programs.filter(({id}) => id != Number(action.payload?.programId))
+        state.programs = state.programs.filter(
+          ({id}) => id != Number((action.payload as any)?.programId)
+        )
       })
       .addCase(onDeleteProgram.rejected, (state, action) => {
         state.loading = false

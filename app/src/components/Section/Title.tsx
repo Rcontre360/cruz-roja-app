@@ -7,7 +7,12 @@ type Props = {
   children: ReactNode
 }
 
-const SectionTitle = ({custom = false, first = false, last = false, children}: Props) => {
+const SectionTitle: React.FunctionComponent<Props> = ({
+  custom = false,
+  first = false,
+  last = false,
+  children,
+}) => {
   let classAddon = '-my-6'
 
   if (first) {

@@ -1,6 +1,6 @@
 import {AxiosError} from 'axios'
 
-export const handleAPIError = (error: unknown, rejectWithValue: (msg: string) => void) => {
+export const handleAPIError = (error: unknown, rejectWithValue: (msg: string) => void): any => {
   const err = error as AxiosError
 
   if (Number(err.status) == 401) return rejectWithValue('No autorizado para esta accion')

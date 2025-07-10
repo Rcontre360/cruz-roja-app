@@ -9,7 +9,6 @@ import {
   mdiMonitorCellphone,
   mdiReload,
 } from '@mdi/js'
-import Head from 'next/head'
 import React, {useState} from 'react'
 import Button from '@/components/Button'
 import SectionMain from '@/components/Section/Main'
@@ -25,7 +24,6 @@ import {sampleChartData} from '@/components/ChartLineSample/config'
 import ChartLineSample from '@/components/ChartLineSample'
 import NotificationBar from '@/components/NotificationBar'
 import TableSampleClients from '@/components/Table/Table'
-import {getPageTitle} from '@/config'
 
 const DashboardPage = () => {
   const {clients} = useSampleClients()
@@ -43,9 +41,6 @@ const DashboardPage = () => {
 
   return (
     <>
-      <Head>
-        <title>{getPageTitle('Dashboard')}</title>
-      </Head>
       <SectionMain>
         <SectionTitleLineWithButton icon={mdiChartTimelineVariant} title="Overview" main>
           <Button

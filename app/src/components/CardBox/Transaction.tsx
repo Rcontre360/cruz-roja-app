@@ -1,6 +1,6 @@
-import { mdiCashMinus, mdiCashPlus, mdiCreditCard, mdiReceipt } from '@mdi/js'
+import {mdiCashMinus, mdiCashPlus, mdiCreditCard, mdiReceipt} from '@mdi/js'
 import React from 'react'
-import { Transaction } from '../../interfaces'
+import {Transaction} from '../../interfaces'
 import CardBox from '.'
 import IconRounded from '../Icon/Rounded'
 import PillTag from '../PillTag'
@@ -9,7 +9,7 @@ type Props = {
   transaction: Transaction
 }
 
-const CardBoxTransaction = (props: Props) => {
+const CardBoxTransaction: React.FunctionComponent<Props> = (props) => {
   const icon = {
     withdraw: mdiCashMinus,
     deposit: mdiCashPlus,

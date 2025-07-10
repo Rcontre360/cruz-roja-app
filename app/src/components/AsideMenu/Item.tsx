@@ -1,11 +1,10 @@
-import React, {useEffect, useState} from 'react'
+import React, {useState} from 'react'
 import {mdiMinus, mdiPlus} from '@mdi/js'
 import Icon from '../Icon'
 import Link from 'next/link'
 import {getButtonColor} from '../../colors'
 import AsideMenuList from './List'
 import {MenuAsideItem} from '../../interfaces'
-import {useRouter} from 'next/navigation'
 
 type Props = {
   item: MenuAsideItem
@@ -19,18 +18,6 @@ const AsideMenuItem = ({item, isDropdownList = false, onClick}: Props) => {
   const [isDropdownActive, setIsDropdownActive] = useState(false)
 
   const activeClassAddon = !item.color && isLinkActive ? 'aside-menu-item-active font-bold' : ''
-
-  const {asPath, isReady} = useRouter()
-
-  useEffect(() => {
-    if (item.href && isReady) {
-      const linkPathName = new URL(item.href, location.href).pathname
-
-      const activePathname = new URL(asPath, location.href).pathname
-
-      setIsLinkActive(linkPathName === activePathname)
-    }
-  }, [item.href, isReady, asPath])
 
   const asideMenuItemInnerContents = (
     <>

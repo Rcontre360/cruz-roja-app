@@ -1,6 +1,6 @@
-import { mdiTrendingDown, mdiTrendingNeutral, mdiTrendingUp } from '@mdi/js'
+import {mdiTrendingDown, mdiTrendingNeutral, mdiTrendingUp} from '@mdi/js'
 import React from 'react'
-import { Client } from '../../interfaces'
+import {Client} from '../../interfaces'
 import CardBox from '.'
 import PillTag from '../PillTag'
 import UserAvatar from '../UserAvatar'
@@ -9,7 +9,7 @@ type Props = {
   client: Client
 }
 
-const CardBoxClient = (props: Props) => {
+const CardBoxClient: React.FunctionComponent<Props> = (props) => {
   const pillColor = () => {
     if (props.client.progress >= 60) {
       return 'success'

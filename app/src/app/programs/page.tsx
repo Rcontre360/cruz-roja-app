@@ -1,6 +1,5 @@
 'use client'
 
-import Head from 'next/head'
 import React from 'react'
 import {mdiDelete, mdiMonitorCellphone, mdiPencil} from '@mdi/js'
 import CardBox from '../../components/CardBox'
@@ -37,9 +36,6 @@ const ProgramsPage = () => {
 
   return (
     <>
-      <Head>
-        <title>{getPageTitle('Programas de voluntariado')}</title>
-      </Head>
       <SectionMain>
         <SectionTitle first>Listado programas de voluntariado</SectionTitle>
         {error && (
