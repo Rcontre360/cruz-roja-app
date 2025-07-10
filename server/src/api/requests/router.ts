@@ -13,7 +13,11 @@ export const requestsRouter: Router = (() => {
 
   router.get("/all", async (_: Request, res: Response) => {
     try {
-      const requests = await db.request.findMany();
+      const requests = await db.request.findMany({
+        include: {
+          user: true,
+        },
+      });
 
       handleServiceResponse(
         new ServiceResponse(
@@ -69,6 +73,9 @@ export const requestsRouter: Router = (() => {
           status: REQUEST_STATUS.WAITING,
           startDate: new Date(startDate * 1000),
           endDate: new Date(endDate * 1000),
+        },
+        include: {
+          user: true,
         },
       });
 
@@ -179,6 +186,7 @@ export const requestsRouter: Router = (() => {
       const updated = await db.request.update({
         where: {id: parseInt(requestId, 10)},
         data: updates,
+        include: {user: true},
       });
 
       handleServiceResponse(

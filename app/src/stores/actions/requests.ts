@@ -80,13 +80,11 @@ export const onApproveRejectRequest = createAsyncThunk(
   'requests/approve/reject',
   async (args: {id: string; status: 'approve' | 'reject'}, {rejectWithValue}) => {
     try {
-      if (args.status === 'approve') return await api.put<Request>(`/requests/approve/${args.id}`)
-      else return await api.put<Request>(`/requests/reject/${args.id}`)
+      let res: any
+      if (args.status === 'approve') res = await api.put<Request>(`/requests/approve/${args.id}`)
+      else res = api.put<Request>(`/requests/reject/${args.id}`)
+      return res.data.updated
     } catch (error: Error) {
-      console.error(
-        'Error al approvar/rechazar la solicitud:',
-        error.response?.data || error.message
-      )
       return rejectWithValue(error.response?.data || 'Error al crear la solicitud')
     }
   }
@@ -130,7 +128,7 @@ const requestSlice = createSlice({
       // Editar una solicitud
       .addCase(onApproveRejectRequest.fulfilled, (state, action) => {
         state.requests = state.requests.map((req) =>
-          req.id === action.payload.data ? action.payload.data : req
+          req.id == action.payload ? action.payload : req
         )
       })
   },

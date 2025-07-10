@@ -3,9 +3,10 @@
 import Head from 'next/head'
 import {
   mdiDelete,
+  mdiCheck,
+  mdiClose,
   mdiMonitorCellphone,
   mdiPencil,
-  mdiPlus,
   mdiCheckCircle,
   mdiCloseCircle,
   mdiMinusCircle,
@@ -19,22 +20,35 @@ import Table from '../../components/Table/Table'
 import React, {useState} from 'react'
 import {getPageTitle} from '../../config'
 import {useAppDispatch, useAppSelector} from '../../stores/hooks'
-import {onDeleteRequest, onGetRequests} from '../../stores/actions/requests'
+import {
+  onApproveRejectRequest,
+  onDeleteRequest,
+  onGetRequests,
+} from '../../stores/actions/requests'
 import {useRouter} from 'next/navigation'
 import {useDeleteConfirmation} from '../../components/DeleteConfirmationProvider'
 import Button from '@/components/Button'
 import {Listbox, Transition} from '@headlessui/react'
-import {CheckIcon, ChevronsUpDownIcon} from 'lucide-react'
+import {CheckIcon, ChevronsUpDownIcon, TrashIcon} from 'lucide-react'
 
 const statusOptions = [
   {id: 'all', name: 'Todos'},
-  {id: 'accepted', name: 'Aceptado'},
-  {id: 'rejected', name: 'Rechazado'},
-  {id: 'new', name: 'Nuevo'},
+  {id: 'APPROVED', name: 'Aceptado'},
+  {id: 'REJECTED', name: 'Rechazado'},
+  {id: 'WAITING', name: 'Nuevo'},
 ]
 
 const RequestsPage = () => {
-  const {loaded, error, requests} = useAppSelector((state) => state.requests)
+  const {loaded, error, requests: requestsRaw} = useAppSelector((state) => state.requests)
+  const requests = requestsRaw.map((req) => ({
+    ...req,
+    name: req.user.name,
+    surname: req.user.surname,
+    email: req.user.email,
+    dni: req.user.dni,
+    country: req.user.country || 'N/A',
+  }))
+
   const dispatch = useAppDispatch()
   const router = useRouter()
   const {confirmDelete} = useDeleteConfirmation()
@@ -58,10 +72,21 @@ const RequestsPage = () => {
     if (confirmed) {
       await dispatch(onDeleteRequest({requestId: String(row.id)}))
     }
+    dispatch(onGetRequests())
+  }
+
+  const handleAccept = async (row: {id: string}) => {
+    await dispatch(onApproveRejectRequest({id: row.id, status: 'approve'}))
+    dispatch(onGetRequests())
+  }
+
+  const handleReject = async (row: {id: string}) => {
+    await dispatch(onApproveRejectRequest({id: row.id, status: 'reject'}))
+    dispatch(onGetRequests())
   }
 
   const handleCreate = () => {
-    router.push('/requests/create/new') // Redirige a la página para crear una nueva solicitud
+    router.push('/requests/new') // Redirige a la página para crear una nueva solicitud
   }
 
   const renderStatus = (status?: string) => {
@@ -69,11 +94,11 @@ const RequestsPage = () => {
     let label = 'Nuevo'
     let icon = mdiMinusCircle // ícono predeterminado
 
-    if (status === 'accepted') {
+    if (status === 'APPROVED') {
       color = 'green'
       label = 'Aceptado'
       icon = mdiCheckCircle // ícono para 'Aceptado'
-    } else if (status === 'rejected') {
+    } else if (status === 'REJECTED') {
       color = 'red'
       label = 'Rechazado'
       icon = mdiCloseCircle // ícono para 'Rechazado'
@@ -106,9 +131,6 @@ const RequestsPage = () => {
 
   return (
     <>
-      <Head>
-        <title>{getPageTitle('Solicitudes de voluntariado')}</title>
-      </Head>
       <SectionMain>
         <SectionTitle first>Listado solicitudes de voluntariado</SectionTitle>
         {error && (
@@ -184,28 +206,27 @@ const RequestsPage = () => {
         <CardBox className="mb-6" hasTable>
           <Table
             columns={[
+              {key: 'name', label: 'Nombre', type: 'text'},
+              {key: 'surname', label: 'Apellido', type: 'text'},
+              {key: 'dni', label: 'DNI', type: 'text'},
               {key: 'country', label: 'País', type: 'text'},
+              {key: 'email', label: 'Correo', type: 'text'},
+
               {key: 'subsidiary', label: 'Filial', type: 'text'},
-              {key: 'programId', label: 'ID Programa', type: 'text'},
-              {
-                key: 'startDate',
-                label: 'Fecha de inicio',
-                type: 'custom',
-                render: (row: {startDate: string}) => formatDate(row.startDate),
-              }, // Formatear fecha de inicio
-              {
-                key: 'endDate',
-                label: 'Fecha de fin',
-                type: 'custom',
-                render: (row: {endDate: string}) => formatDate(row.endDate),
-              }, // Formatear fecha de fin
               {key: 'edit', label: 'Editar', icon: mdiPencil, onClick: handleEdit, type: 'icon'},
               {
-                key: 'delete',
-                label: 'Borrar',
-                icon: mdiDelete,
-                onClick: handleDelete,
-                type: 'icon',
+                key: 'action',
+                label: 'Accion',
+                render: (row: any) => {
+                  return (
+                    <div className="flex gap-3 w-full h-full">
+                      <Button icon={mdiDelete} onClick={() => handleDelete(row)}></Button>
+                      <Button icon={mdiCheck} onClick={() => handleAccept(row)}></Button>
+                      <Button icon={mdiClose} onClick={() => handleReject(row)}></Button>
+                    </div>
+                  )
+                },
+                type: 'custom',
               },
               {
                 key: 'status',
