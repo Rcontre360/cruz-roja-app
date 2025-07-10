@@ -1,7 +1,7 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit'
 import api from '../api'
 import {UserLoginBody, UserRegistrationBody} from '../../schemas/users'
-import {handleAPIERror} from './utils'
+import {handleAPIError} from './utils'
 
 type UserState = {
   user: UserRegistrationBody
@@ -26,7 +26,7 @@ export const onGetProfile = createAsyncThunk('users/profile', async (_, {rejectW
     const response = await api.get<{user: UserRegistrationBody}>('/users/profile')
     return {user: response.data.user, token: api.loadTokenFromStorage()}
   } catch (error) {
-    return handleAPIERror(error, rejectWithValue)
+    return handleAPIError(error, rejectWithValue)
   }
 })
 
@@ -41,7 +41,7 @@ export const onLoginUser = createAsyncThunk(
       api.setToken(response.data.token) // Save token for future requests
       return response.data
     } catch (error) {
-      return handleAPIERror(error, rejectWithValue)
+      return handleAPIError(error, rejectWithValue)
     }
   }
 )
@@ -52,7 +52,7 @@ export const onLogout = createAsyncThunk('users/logout', async (_, {rejectWithVa
     api.setToken('') // Save token for future requests
     return response.data
   } catch (error) {
-    return handleAPIERror(error, rejectWithValue)
+    return handleAPIError(error, rejectWithValue)
   }
 })
 
@@ -63,7 +63,7 @@ export const onRegisterUser = createAsyncThunk(
       const response = await api.post<UserRegistrationBody>('/users/register', register)
       return response.data
     } catch (error) {
-      return handleAPIERror(error, rejectWithValue)
+      return handleAPIError(error, rejectWithValue)
     }
   }
 )
@@ -75,7 +75,7 @@ export const onModifyUser = createAsyncThunk(
       const response = await api.post<UserRegistrationBody>('/users/modify/user', register)
       return response.data
     } catch (error) {
-      return handleAPIERror(error, rejectWithValue)
+      return handleAPIError(error, rejectWithValue)
     }
   }
 )
@@ -85,7 +85,7 @@ export const onGetHours = createAsyncThunk('users/hours', async (_, {rejectWithV
     const response = await api.get<Record<string, number>>('/users/hours')
     return response.data
   } catch (error) {
-    return handleAPIERror(error, rejectWithValue)
+    return handleAPIError(error, rejectWithValue)
   }
 })
 
@@ -118,6 +118,7 @@ const userSlice = createSlice({
       .addCase(onLoginUser.rejected, (state, action) => {
         state.loading = false
         state.loaded = true
+        console.log('ERROR', action)
         state.error = action.payload as string
       })
       .addCase(onRegisterUser.pending, (state) => {

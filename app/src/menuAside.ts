@@ -35,14 +35,14 @@ const menuAside: MenuAsideItem[] = [
         icon: mdiListBox,
       },
       {
-        href: '/requests/create/processed',
-        label: 'Procesadas',
+        href: '/requests/new',
+        label: 'Crear solicitud',
         icon: mdiListBox,
       },
     ],
   },
   {
-    label: 'Voluntarios',
+    label: 'Voluntarios [TODO]',
     icon: mdiAccountCircle,
     menu: [
       {
@@ -57,19 +57,19 @@ const menuAside: MenuAsideItem[] = [
       },
     ],
   },
-  {
-    href: '/email',
-    label: 'Envio de correos',
-    icon: mdiEmail,
-  },
+  //{
+  //href: '/email',
+  //label: 'Envio de correos',
+  //icon: mdiEmail,
+  //},
   {
     href: '/hours',
-    label: 'Horas',
+    label: 'Horas [TODO]',
     icon: mdiClock,
   },
   {
     href: '/profile',
-    label: 'Perfil voluntario',
+    label: 'Perfil voluntario [TODO]',
     icon: mdiNaturePeople,
   },
   {
@@ -79,72 +79,67 @@ const menuAside: MenuAsideItem[] = [
   },
   {
     href: '/subsidiaries',
-    label: 'Registro de filiales',
+    label: 'Registro de filiales [TODO]',
     icon: mdiBook,
   },
-  {
-    href: '/activity-list',
-    label: 'Lista de actividades',
-    icon: mdiCheck,
-  },
-  {
-    label: 'Styles',
-    icon: mdiViewList,
-    menu: [
-      {
-        href: '/styles/dashboard',
-        icon: mdiMonitor,
-        label: 'Dashboard',
-      },
-      {
-        href: '/styles/tables',
-        label: 'Tables',
-        icon: mdiTable,
-      },
-      {
-        href: '/styles/forms',
-        label: 'Forms',
-        icon: mdiSquareEditOutline,
-      },
-      {
-        href: '/styles/ui',
-        label: 'UI',
-        icon: mdiTelevisionGuide,
-      },
-      {
-        href: '/styles/responsive',
-        label: 'Responsive',
-        icon: mdiResponsive,
-      },
-      {
-        href: '/styles/',
-        label: 'Styles',
-        icon: mdiPalette,
-      },
-      {
-        href: '/styles/profile',
-        label: 'Profile',
-        icon: mdiAccountCircle,
-      },
-      {
-        href: '/styles/error',
-        label: 'Error',
-        icon: mdiAlertCircle,
-      },
-      {
-        label: 'Dropdown',
-        icon: mdiViewList,
-        menu: [
-          {
-            label: 'Item One',
-          },
-          {
-            label: 'Item Two',
-          },
-        ],
-      },
-    ],
-  },
+  //{
+  //label: 'Styles',
+  //icon: mdiViewList,
+  //menu: [
+  //{
+  //href: '/styles/dashboard',
+  //icon: mdiMonitor,
+  //label: 'Dashboard',
+  //},
+  //{
+  //href: '/styles/tables',
+  //label: 'Tables',
+  //icon: mdiTable,
+  //},
+  //{
+  //href: '/styles/forms',
+  //label: 'Forms',
+  //icon: mdiSquareEditOutline,
+  //},
+  //{
+  //href: '/styles/ui',
+  //label: 'UI',
+  //icon: mdiTelevisionGuide,
+  //},
+  //{
+  //href: '/styles/responsive',
+  //label: 'Responsive',
+  //icon: mdiResponsive,
+  //},
+  //{
+  //href: '/styles/',
+  //label: 'Styles',
+  //icon: mdiPalette,
+  //},
+  //{
+  //href: '/styles/profile',
+  //label: 'Profile',
+  //icon: mdiAccountCircle,
+  //},
+  //{
+  //href: '/styles/error',
+  //label: 'Error',
+  //icon: mdiAlertCircle,
+  //},
+  //{
+  //label: 'Dropdown',
+  //icon: mdiViewList,
+  //menu: [
+  //{
+  //label: 'Item One',
+  //},
+  //{
+  //label: 'Item Two',
+  //},
+  //],
+  //},
+  //],
+  //},
 ]
 
 export default menuAside

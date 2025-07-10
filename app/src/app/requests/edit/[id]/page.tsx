@@ -24,7 +24,7 @@ const EditRequestPage = () => {
 
   // Obtener la solicitud que se va a editar
   const {requests, error: fetchError} = useAppSelector((state) => state.requests)
-  const request = requests.find((req) => req.id === id)
+  const request = requests.find((req) => req.id == id)
 
   // Si la solicitud no está cargada aún, mostrar un mensaje de carga o error
   if (!request && fetchError) {
@@ -35,10 +35,8 @@ const EditRequestPage = () => {
     country: request?.country || '',
     subsidiary: request?.subsidiary || '',
     programId: request?.programId || '',
-    startDate: request?.startDate
-      ? new Date(request.startDate * 1000).toISOString().split('T')[0]
-      : '',
-    endDate: request?.endDate ? new Date(request.endDate * 1000).toISOString().split('T')[0] : '',
+    startDate: request?.startDate ? new Date(request.startDate).toISOString().split('T')[0] : '',
+    endDate: request?.endDate ? new Date(request.endDate).toISOString().split('T')[0] : '',
   }
 
   const handleSubmit = async (values: typeof initialValues) => {
