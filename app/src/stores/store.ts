@@ -1,13 +1,15 @@
-import { configureStore } from '@reduxjs/toolkit'
+import {configureStore} from '@reduxjs/toolkit'
 import userSlice from './actions/users'
+import volunteerSlice from './actions/volunteers'
 import programsSlice from './actions/programs'
-import requestsReducer from './actions/requests'  // Asegúrate de importar esto correctamente
+import requestsReducer from './actions/requests' // Asegúrate de importar esto correctamente
 
 export const store = configureStore({
   reducer: {
-    requests: requestsReducer,   // Reducer de solicitudes
+    requests: requestsReducer, // Reducer de solicitudes
     programs: programsSlice,
     user: userSlice,
+    volunteers: volunteerSlice,
   },
 })
 

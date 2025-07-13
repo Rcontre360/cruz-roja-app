@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 import {env} from "@/common/env";
-import {authenticate} from "@/middleware/auth";
+import {authenticate, authorize} from "@/middleware/auth";
 import {REQUEST_STATUS, ROLES} from "@/common/constants";
 import {
   UserLoginBodySchema,
@@ -30,6 +30,59 @@ export const usersRouter: Router = (() => {
       ),
       res
     );
+  });
+
+  router.get("/all", authenticate, async (req: Request, res: Response) => {
+    const currentUserId = (req as any).user.id;
+
+    try {
+      const users = await db.user.findMany({
+        where: {
+          id: {
+            not: currentUserId,
+          },
+        },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          surname: true,
+          age: true,
+          country: true,
+          phone: true,
+          address: true,
+          disponibility: true,
+          education: true,
+          courses: true,
+          ingressDate: true,
+          program: true,
+          subsidiary: true,
+          dni: true,
+          role: true,
+          password: false,
+        },
+      });
+
+      handleServiceResponse(
+        new ServiceResponse(
+          ResponseStatus.Success,
+          `users retrieved successfully`,
+          {users},
+          StatusCodes.OK
+        ),
+        res
+      );
+    } catch (err: any) {
+      handleServiceResponse(
+        new ServiceResponse(
+          ResponseStatus.Failed,
+          `error when retrieving users`,
+          {message: err.message},
+          StatusCodes.INTERNAL_SERVER_ERROR
+        ),
+        res
+      );
+    }
   });
 
   router.get("/hours", authenticate, async (req: Request, res: Response) => {
@@ -187,6 +240,74 @@ export const usersRouter: Router = (() => {
       );
     }
   });
+
+  router.delete(
+    "/delete/:userId",
+    authenticate,
+    authorize([ROLES.ADMIN]),
+    async (req: Request, res: Response) => {
+      const {userId} = req.params;
+
+      // Validate userId parameter
+      if (!userId) {
+        handleServiceResponse(
+          new ServiceResponse(
+            ResponseStatus.Failed,
+            "User ID is required",
+            {},
+            StatusCodes.BAD_REQUEST
+          ),
+          res
+        );
+        return;
+      }
+
+      try {
+        // Check if user exists
+        const userToDelete = await db.user.findUnique({
+          where: {id: userId},
+        });
+
+        if (!userToDelete) {
+          handleServiceResponse(
+            new ServiceResponse(ResponseStatus.Failed, "User not found", {}, StatusCodes.NOT_FOUND),
+            res
+          );
+          return;
+        }
+
+        // Delete user's sessions first (to maintain referential integrity)
+        await db.session.deleteMany({
+          where: {userId},
+        });
+
+        // Delete the user
+        await db.user.delete({
+          where: {id: userId},
+        });
+
+        handleServiceResponse(
+          new ServiceResponse(
+            ResponseStatus.Success,
+            "User deleted successfully",
+            {deletedUserId: userId},
+            StatusCodes.OK
+          ),
+          res
+        );
+      } catch (err: any) {
+        handleServiceResponse(
+          new ServiceResponse(
+            ResponseStatus.Failed,
+            "Error when deleting user",
+            {message: err.message},
+            StatusCodes.INTERNAL_SERVER_ERROR
+          ),
+          res
+        );
+      }
+    }
+  );
 
   router.post("/login", async (req, res) => {
     const {email, password} = req.body;

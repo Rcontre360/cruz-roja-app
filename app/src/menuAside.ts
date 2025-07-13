@@ -1,20 +1,11 @@
 import {
   mdiAccountCircle,
-  mdiMonitor,
-  mdiAlertCircle,
-  mdiSquareEditOutline,
   mdiTable,
-  mdiViewList,
-  mdiTelevisionGuide,
-  mdiResponsive,
   mdiListBox,
-  mdiPalette,
   mdiPlus,
-  mdiEmail,
   mdiClock,
   mdiNaturePeople,
   mdiBook,
-  mdiCheck,
   mdiHumanHandsup,
 } from '@mdi/js'
 import {MenuAsideItem} from './interfaces'
@@ -42,11 +33,11 @@ const menuAside: MenuAsideItem[] = [
     ],
   },
   {
-    label: 'Voluntarios [TODO]',
+    label: 'Voluntarios',
     icon: mdiAccountCircle,
     menu: [
       {
-        href: '/volunteers/list',
+        href: '/volunteers',
         label: 'Lista de voluntarios',
         icon: mdiListBox,
       },

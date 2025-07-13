@@ -4,7 +4,6 @@ import React from 'react'
 import {getNames} from 'country-list'
 import Button from '@/components/Button'
 import CardBox from '@/components/CardBox'
-import SectionFullScreen from '@/components/Section/FullScreen'
 import {Field, Form, Formik} from 'formik'
 import FormField from '@/components/Form/Field'
 import FormCheckRadio from '@/components/Form/CheckRadio'
@@ -16,6 +15,8 @@ import {useAppDispatch, useAppSelector} from '@/stores/hooks'
 import {onRegisterUser} from '@/stores/actions/users'
 import {UserRegistrationBody} from '@/schemas/users'
 import {onGetPrograms} from '@/stores/actions/programs'
+import SectionMain from '@/components/Section/Main'
+import SectionTitle from '@/components/Section/Title'
 
 type LoginForm = {
   nombre: string
@@ -56,11 +57,11 @@ const initialValues: LoginForm = {
   remember: true,
 }
 
-const UserRegisterPage = () => {
+const VolunteerRegisterPage = () => {
   const router = useRouter()
   const dispatch = useAppDispatch()
   const programs = useAppSelector((state) => state.programs)
-  const {user, token, error} = useAppSelector((state) => state.user)
+  const {error} = useAppSelector((state) => state.user)
 
   const handleSubmit = async (formValues: LoginForm) => {
     const user: UserRegistrationBody = {
@@ -81,11 +82,7 @@ const UserRegisterPage = () => {
       dni: formValues.ci,
     }
     await dispatch(onRegisterUser(user))
-    router.push('/')
-  }
-
-  const goToLogin = () => {
-    router.push('/')
+    router.push('/volunteers')
   }
 
   React.useEffect(() => {
@@ -99,14 +96,12 @@ const UserRegisterPage = () => {
   }, [programs, dispatch]) // Dependencies: re-run if `myState` or `dispatch` changes
   //
 
-  React.useEffect(() => {
-    if (user?.email || token) router.push('/dashboard')
-  }, [user, token, router])
-
   return (
     <>
-      <SectionFullScreen>
-        <CardBox className="w-11/12 my-10 md:w-10/12 lg:w-9/12 xl:w-8/12 shadow-2xl">
+      <SectionMain>
+        <SectionTitle first>Registrar Nuevo Voluntario</SectionTitle>
+
+        <CardBox className="w-full">
           <Formik initialValues={initialValues} onSubmit={handleSubmit}>
             {({isSubmitting}: {isSubmitting: boolean}) => (
               <Form>
@@ -199,17 +194,14 @@ const UserRegisterPage = () => {
                   <Buttons>
                     <Button type="submit" label="Registrar" color="info" disabled={isSubmitting} />
                   </Buttons>
-                  <Buttons>
-                    <Button label="Cancelar" color="lightDark" onClick={goToLogin} />
-                  </Buttons>
                 </div>
               </Form>
             )}
           </Formik>
         </CardBox>
-      </SectionFullScreen>
+      </SectionMain>
     </>
   )
 }
 
-export default UserRegisterPage
+export default VolunteerRegisterPage
