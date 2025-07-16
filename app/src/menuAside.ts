@@ -6,6 +6,8 @@ import {
   mdiClock,
   mdiNaturePeople,
   mdiBook,
+  mdiCheck,
+  mdiPin,
   mdiHumanHandsup,
 } from '@mdi/js'
 import {MenuAsideItem} from './interfaces'
@@ -33,7 +35,7 @@ const menuAside: MenuAsideItem[] = [
     ],
   },
   {
-    label: 'Voluntarios',
+    label: 'Voluntarios [ONLY MOCK]',
     icon: mdiAccountCircle,
     menu: [
       {
@@ -48,19 +50,41 @@ const menuAside: MenuAsideItem[] = [
       },
     ],
   },
-  //{
-  //href: '/email',
-  //label: 'Envio de correos',
-  //icon: mdiEmail,
-  //},
   {
-    href: '/hours',
-    label: 'Horas [TODO]',
+    label: 'Actividades [ONLY MOCK]',
+    icon: mdiPin,
+    menu: [
+      {
+        href: '/activities/',
+        label: 'Lista de actividades',
+        icon: mdiListBox,
+      },
+      {
+        href: '/activities/new',
+        label: 'Nueva actividad',
+        icon: mdiPlus,
+      },
+    ],
+  },
+    {
+    label: 'Horas [ONLY MOCK]',
     icon: mdiClock,
+    menu: [
+      {
+        href: '/hours/',
+        label: 'Lista de horas',
+        icon: mdiListBox,
+      },
+      {
+        href: '/hours/new',
+        label: 'Nueva hora',
+        icon: mdiPlus,
+      },
+    ],
   },
   {
     href: '/profile',
-    label: 'Perfil voluntario [TODO]',
+    label: 'Perfil voluntario [HELP-RELATED WITH REGISTER]',
     icon: mdiNaturePeople,
   },
   {
@@ -70,7 +94,7 @@ const menuAside: MenuAsideItem[] = [
   },
   {
     href: '/subsidiaries',
-    label: 'Registro de filiales [TODO]',
+    label: 'Registro de filiales [ONLY MOCK]',
     icon: mdiBook,
   },
   //{
