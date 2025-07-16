@@ -1,15 +1,21 @@
 import {configureStore} from '@reduxjs/toolkit'
 import userSlice from './actions/users'
-import volunteerSlice from './actions/volunteers'
 import programsSlice from './actions/programs'
-import requestsReducer from './actions/requests' // Asegúrate de importar esto correctamente
+import requestsReducer from './actions/requests'
+import activitiesReducer from './actions/activities'
+import hoursReducer from './actions/hours'
+import volunteerSlice from './actions/volunteers'
+import subsidiarySlice from './actions/subsidiaries'
 
 export const store = configureStore({
   reducer: {
     requests: requestsReducer, // Reducer de solicitudes
     programs: programsSlice,
+    activities: activitiesReducer,
+    hours: hoursReducer,
     user: userSlice,
     volunteers: volunteerSlice,
+    subsidiaries: subsidiarySlice,
   },
 })
 
