@@ -378,6 +378,56 @@ export const usersRouter: Router = (() => {
       res
     );
   });
+router.put("/modify/:userId", authenticate, authorize([ROLES.ADMIN]), async (req: Request, res: Response) => {
+  const { userId } = req.params;
+  const parse = UserModificationBodySchema.safeParse(req.body);
+
+  if (!parse.success) {
+    handleServiceResponse(
+      new ServiceResponse(
+        ResponseStatus.Failed,
+        `Datos inválidos: ${parse.error.errors[0].path[0]}`,
+        {},
+        StatusCodes.BAD_REQUEST
+      ),
+      res
+    );
+    return;
+  }
+
+  const values = parse.data;
+
+  if (values.password) {
+    values.password = await bcrypt.hash(values.password, env.PASSWORD_SALT);
+  }
+
+  try {
+    const user = await db.user.update({
+      where: { id: userId },
+      data: values,
+    });
+
+    handleServiceResponse(
+      new ServiceResponse(
+        ResponseStatus.Success,
+        `Usuario actualizado correctamente`,
+        { user },
+        StatusCodes.OK
+      ),
+      res
+    );
+  } catch (err: any) {
+    handleServiceResponse(
+      new ServiceResponse(
+        ResponseStatus.Failed,
+        `Error al actualizar usuario: ${err.message}`,
+        { message: err.message },
+        StatusCodes.INTERNAL_SERVER_ERROR
+      ),
+      res
+    );
+  }
+});
 
   router.post("/logout", authenticate, async (req, res) => {
     const token = (req as any)?.user?.token;

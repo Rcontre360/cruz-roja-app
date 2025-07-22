@@ -22,7 +22,7 @@ const ActivitiesPage = () => {
   const { confirmDelete } = useDeleteConfirmation()
 
   const activitiesState = useAppSelector((state) => {
-    console.log('Redux state in ActivitiesPage:', state) // Para debug
+    //console.log('Redux state in ActivitiesPage:', state) // Para debug
     return state.activities
   })
 
@@ -50,7 +50,7 @@ const ActivitiesPage = () => {
       dispatch(onGetActivities())
     }
   }
-  const mockActivities = [
+/*const mockActivities = [
   {
     id: '1',
     name: 'Jornada de Salud',
@@ -67,9 +67,10 @@ const ActivitiesPage = () => {
     startDate: '2025-07-03T09:00:00Z',
     endDate: '2025-07-03T11:00:00Z',
   },
-]
+]*/
 
-
+console.log(activities)
+console.log('✅ Es array:', Array.isArray(activities));
   return (
     <SectionMain>
       <SectionTitle first>Gestión de actividades</SectionTitle>
@@ -123,7 +124,7 @@ const ActivitiesPage = () => {
             },
           ]}
           perPage={10}
-          elements={mockActivities}
+          elements={activities}
         />
       </CardBox>
     </SectionMain>

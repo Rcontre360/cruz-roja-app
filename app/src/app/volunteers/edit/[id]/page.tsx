@@ -28,85 +28,70 @@ const availabilityOptions = [
   { value: 'AMBOS', label: 'Ambos' },
 ]
 
-// Mock data para cuando no hay voluntario cargado
-const mockVolunteer = {
-  id: 'mock-id',
-  name: 'Juan',
-  surname: 'Fernández',
-  dni: '12345678',
-  email: 'juan.fernandez@example.com',
-  password: '',
-  availability: 'TIEMPO_COMPLETO',
-  address: 'Av. Este 2, La Candelaria',
-  education: 'Licenciatura en Psicología',
-  courses: 'Curso de Primeros Auxilios',
-  phone: '+58 123 456 7890',
-  joiningDate: '2023-01-01',
-  programId: '',
-  birthDate: '1990-01-01',
-  country: 'Venezuela',
-  subsidiary: 'Caracas',
-}
-
 export default function EditVolunteerPage() {
   const router = useRouter()
   const dispatch = useAppDispatch()
   const params = useParams()
   const { id } = params
 
-  // Traer programas para el select
   const programs = useAppSelector((s) => s.programs.programs)
-
-  // Traer voluntarios para buscar el que editamos
   const volunteers = useAppSelector((s) => s.volunteers.volunteers)
+
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [showPasswordFields, setShowPasswordFields] = useState(false)
 
   useEffect(() => {
     if (volunteers.length === 0) dispatch(onGetVolunteers())
     if (programs.length === 0) dispatch(onGetPrograms())
   }, [dispatch, volunteers.length, programs.length])
 
-  const volunteer = volunteers.find((v) => v.id === id) || mockVolunteer
+const volunteer = volunteers.find((v) => v.id === id)
+//console.log(' Datos del voluntario desde Redux:', volunteer)
+  if (!volunteer) return null 
 
-  const initialValues = {
-    name: volunteer.name || '',
-    surname: volunteer.surname || '',
-    dni: volunteer.dni || '',
-    email: volunteer.email || '',
-    password: '',
-    repeatPassword: '',
-    availability: volunteer.availability || '',
-    address: volunteer.address || '',
-    education: volunteer.education || '',
-    courses: volunteer.courses || '',
-    phone: volunteer.phone || '',
-    joiningDate: volunteer.joiningDate
-  ? new Date(volunteer.joiningDate).toISOString().split('T')[0]
-  : '',
-    programId: volunteer.programId || '',
-    birthDate: volunteer.birthDate
-  ? new Date(volunteer.birthDate).toISOString().split('T')[0]
-  : '',
-    country: volunteer.country || '',
-    subsidiary: volunteer.subsidiary || '',
-  }
+  const parseDate = (dateValue: any) => {
+  if (!dateValue) return ''
+  const dateObj = new Date(dateValue)
+  if (isNaN(dateObj.getTime())) return ''
+  return dateObj.toISOString().split('T')[0]
+}
+
+const initialValues = {
+  name: volunteer.name || '',
+  surname: volunteer.surname || '',
+  dni: volunteer.dni || '',
+  email: volunteer.email || '',
+  password: '',
+  repeatPassword: '',
+  address: volunteer.address || '',
+  education: volunteer.education || '',
+  courses: volunteer.courses || '',
+  phone: volunteer.phone || '',
+  availability: volunteer.disponibility?.toUpperCase() || '',   
+  programId: String(volunteer.program || ''),                  
+  country: volunteer.country || '',
+  subsidiary: volunteer.subsidiary || '',
+  age: volunteer.age || '', 
+  joiningDate: parseDate(volunteer.ingressDate),                
+}
+
+//console.log(' Valores iniciales del formulario:', initialValues)
 
   const handleSubmit = async (values: typeof initialValues) => {
-    // Validaciones básicas
-    const required = ['name','surname','dni','email','availability','joiningDate','programId','birthDate','country','subsidiary']
+    const required = ['name', 'surname', 'dni', 'email', 'availability', 'joiningDate', 'programId', 'country', 'subsidiary']
     for (const field of required) {
       if (!values[field as keyof typeof values]) {
         setError('Completa todos los campos obligatorios (*)')
         return
       }
     }
-    if (values.password !== values.repeatPassword) {
-      setError('Las contraseñas no coinciden')
-      return
-    }
-    // Validación opcional de contraseña solo si hay cambio
-    if (values.password) {
+
+    if (showPasswordFields && values.password) {
+      if (values.password !== values.repeatPassword) {
+        setError('Las contraseñas no coinciden')
+        return
+      }
       const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?#&])[A-Za-z\d@$!%*?#&]{8,}$/
       if (!passwordRegex.test(values.password)) {
         setError('La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un símbolo')
@@ -114,22 +99,22 @@ export default function EditVolunteerPage() {
       }
     }
 
-    const availabilityMap: Record<string, "TIEMPO_COMPLETO" | "MEDIO_TIEMPO" | "AMBOS"> = {
-      TIEMPO_COMPLETO: "TIEMPO_COMPLETO",
-      MEDIO_TIEMPO: "MEDIO_TIEMPO",
-      AMBOS: "AMBOS",
-    }
-
     try {
       setLoading(true)
       setError('')
-      await dispatch(onUpdateVolunteer({
+
+      const payload: any = {
         id,
         ...values,
-        availability: availabilityMap[values.availability as keyof typeof availabilityMap],
+        availability: values.availability,
         joiningDate: new Date(values.joiningDate),
-        birthDate: new Date(values.birthDate),
-      }))
+      }
+
+      if (showPasswordFields && values.password) {
+        payload.password = values.password
+      }
+
+      await dispatch(onUpdateVolunteer(payload))
       router.push('/volunteers')
     } catch (e) {
       setError('Error al actualizar voluntario')
@@ -143,8 +128,10 @@ export default function EditVolunteerPage() {
       <Head>
         <title>{getPageTitle('Editar Voluntario')}</title>
       </Head>
+
       <SectionTitle first>Editar Voluntario</SectionTitle>
       {error && <NotificationBar color="danger">{error}</NotificationBar>}
+
       <CardBox>
         <Formik initialValues={initialValues} onSubmit={handleSubmit} enableReinitialize>
           {({ isSubmitting }) => (
@@ -153,7 +140,6 @@ export default function EditVolunteerPage() {
                 <FormField label="Nombre *">
                   <Field name="name" type="text" className="w-full" />
                 </FormField>
-
                 <FormField label="Apellido *">
                   <Field name="surname" type="text" className="w-full" />
                 </FormField>
@@ -163,32 +149,49 @@ export default function EditVolunteerPage() {
                 <FormField label="DNI *">
                   <Field name="dni" type="text" className="w-full" />
                 </FormField>
-
                 <FormField label="Correo *">
                   <Field name="email" type="email" className="w-full" />
                 </FormField>
               </div>
 
+              {/* Gestión de contraseña opcional */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField label="Contraseña (dejar vacío para no cambiar)">
-                  <Field name="password" type="password" className="w-full" autoComplete="new-password" />
-                </FormField>
+                {!showPasswordFields && (
+                  <div className="col-span-2 text-center">
+                    <button
+                      type="button"
+                      onClick={() => setShowPasswordFields(true)}
+                      className="text-blue-500 hover:underline"
+                    >
+                      Cambiar Contraseña
+                    </button>
+                  </div>
+                )}
 
-                <FormField label="Repetir Contraseña">
-                  <Field name="repeatPassword" type="password" className="w-full" autoComplete="new-password" />
-                </FormField>
+                {showPasswordFields && (
+                  <>
+                    <FormField label="Nueva Contraseña">
+                      <Field name="password" type="password" className="w-full" autoComplete="new-password" />
+                    </FormField>
+                    <FormField label="Repetir Nueva Contraseña">
+                      <Field name="repeatPassword" type="password" className="w-full" autoComplete="new-password" />
+                    </FormField>
+                  </>
+                )}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField label="Disponibilidad *">
                   <Field name="availability" as="select" className="w-full">
-                    <option value="">-- Seleccione --</option>
-                    {availabilityOptions.map(opt => (
-                      <option key={opt.value} value={opt.value}>{opt.label}</option>
-                    ))}
-                  </Field>
-                </FormField>
+                <option value="">-- Seleccione --</option>
+                {availabilityOptions.map(opt => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </Field>
 
+                </FormField>
                 <FormField label="Dirección">
                   <Field name="address" type="text" className="w-full" />
                 </FormField>
@@ -198,7 +201,6 @@ export default function EditVolunteerPage() {
                 <FormField label="Estudios Académicos">
                   <Field name="education" as="textarea" rows={2} className="w-full" />
                 </FormField>
-
                 <FormField label="Cursos Especializados">
                   <Field name="courses" as="textarea" rows={2} className="w-full" />
                 </FormField>
@@ -208,24 +210,29 @@ export default function EditVolunteerPage() {
                 <FormField label="Teléfono">
                   <Field name="phone" type="text" className="w-full" />
                 </FormField>
-
-                <FormField label="Fecha de Nacimiento *">
-                  <Field name="birthDate" type="date" className="w-full" />
-                </FormField>
+                  <FormField label="Edad">
+                    <input
+                      type="text"
+                      className="w-full bg-gray-100"
+                      value={initialValues.age}
+                      disabled
+                    />
+                  </FormField>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField label="Fecha de Ingreso *">
                   <Field name="joiningDate" type="date" className="w-full" />
                 </FormField>
-
                 <FormField label="Programa de Voluntariado *">
                   <Field name="programId" as="select" className="w-full">
-                    <option value="">-- Seleccione Programa --</option>
-                    {programs.map(p => (
-                      <option key={p.id} value={p.id}>{p.name}</option>
-                    ))}
-                  </Field>
+                  <option value="">-- Seleccione Programa --</option>
+                  {programs.map(p => (
+                    <option key={p.id} value={String(p.id)}>
+                      {p.name}
+                    </option>
+                  ))}
+                </Field>
                 </FormField>
               </div>
 
@@ -238,7 +245,6 @@ export default function EditVolunteerPage() {
                     ))}
                   </Field>
                 </FormField>
-
                 <FormField label="Filial *">
                   <Field name="subsidiary" type="text" className="w-full" />
                 </FormField>
@@ -253,6 +259,7 @@ export default function EditVolunteerPage() {
                   {loading ? 'Actualizando...' : 'Actualizar Voluntario'}
                 </button>
               </div>
+
             </Form>
           )}
         </Formik>

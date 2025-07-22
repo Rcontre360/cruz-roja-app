@@ -1,6 +1,6 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit'
 import api from '../api'
-import {Activity, CreateActivitySchema} from '../../schemas/activities'
+import {Activity} from '../../schemas/activities'
 import {handleAPIError} from './utils'
 
 type ActivityState = {
@@ -20,6 +20,7 @@ const INIT_STATE: ActivityState = {
 export const onGetActivities = createAsyncThunk('activities/all', async (_, {rejectWithValue}) => {
   try {
     const res = await api.get<{activities: Activity[]}>('/activities/all')
+    console.log('🔥 API respondió con:', res.data.activities);
     return res.data.activities
   } catch (err) {
     return handleAPIError(err, rejectWithValue)
@@ -40,19 +41,17 @@ export const onDeleteActivity = createAsyncThunk(
 
 export const onCreateActivity = createAsyncThunk(
   'activities/create',
-  async (
-    data: {
+  async (data: {
       name: string
       description: string
       camp: number
       startDate: number
       endDate: number
-    },
-    { rejectWithValue }
+    }, { rejectWithValue }
   ) => {
     try {
-      const res = await api.post('/activities/create', data)
-      return res.data
+    const res = await api.post<{activities: Activity[]}>('/activities/create', data)
+    return res.data.activities
     } catch (err) {
       return handleAPIError(err, rejectWithValue)
     }
@@ -61,16 +60,14 @@ export const onCreateActivity = createAsyncThunk(
 
 export const onUpdateActivity = createAsyncThunk(
   'activities/update',
-  async (
-    data: {
+  async (data: {
       id: string
       name: string
       description: string
       camp: number
       startDate: number
       endDate: number
-    },
-    { rejectWithValue }
+    }, { rejectWithValue }
   ) => {
     try {
       const res = await api.put(`/activities/update/${data.id}`, data)
@@ -80,7 +77,6 @@ export const onUpdateActivity = createAsyncThunk(
     }
   }
 )
-
 
 export const activitiesSlice = createSlice({
   name: 'activities',
@@ -92,26 +88,33 @@ export const activitiesSlice = createSlice({
         state.loading = true
       })
       .addCase(onGetActivities.fulfilled, (state, action) => {
+        console.log('🎯 Reducer recibió:', action.payload);
         state.loaded = true
         state.loading = false
+        state.activities = action.payload
       })
       .addCase(onGetActivities.rejected, (state, action) => {
         state.error = action.payload as string
         state.loading = false
       })
       .addCase(onDeleteActivity.fulfilled, (state, action) => {
-        if (action.payload && typeof (action.payload as { id: string }).id === 'string') {
-          state.activities = state.activities.filter((a) => a.id !== (action.payload as { id: string }).id)
-        }
+        const { id } = action.payload as { id: string }
+        state.activities = state.activities.filter((a) => a.id !== id)
       })
       .addCase(onUpdateActivity.fulfilled, (state, action) => {
-      const updatedActivity = action.payload as Activity
-      const index = state.activities.findIndex((a) => a.id === updatedActivity.id)
-      if (index !== -1) {
-        state.activities[index] = updatedActivity
-      }
-    })
+        const updatedActivity = action.payload as Activity
+        const index = state.activities.findIndex((a) => a.id === updatedActivity.id)
+        if (index !== -1) {
+          state.activities[index] = updatedActivity
+        }
+      })
+      .addCase(onCreateActivity.fulfilled, (state, action) => {  
+        const nuevaActividad = action.payload as Activity
+        state.activities.push(nuevaActividad)
+        state.loading = false
+      })
   },
 })
+
 
 export default activitiesSlice.reducer

@@ -35,7 +35,7 @@ const menuAside: MenuAsideItem[] = [
     ],
   },
   {
-    label: 'Voluntarios [ONLY MOCK]',
+    label: 'Voluntarios',
     icon: mdiAccountCircle,
     menu: [
       {

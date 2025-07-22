@@ -41,10 +41,11 @@ const VolunteersPage = () => {
   const initState = async () => {
     await dispatch(onGetVolunteers())
   }
+  
+useEffect(() => {
+  dispatch(onGetVolunteers())
+}, [dispatch])
 
-  useEffect(() => {
-    if (!loaded) initState()
-  }, [loaded])
 
   const handleEdit = (row: { id: string }) => {
     router.push(`/volunteers/edit/${row.id}`)
@@ -65,26 +66,7 @@ const VolunteersPage = () => {
     router.push('/volunteers/new') // Página para crear nuevo voluntario
   }
 
-  const mockVolunteers = [
-  {
-    id: '1',
-    name: 'Juan',
-    surname: 'Pérez',
-    dni: '12345678',
-    country: 'Miranda',
-    email: 'juan.perez@example.com',
-    subsidiary: 'Caracas',
-  },
-  {
-    id: '2',
-    name: 'María',
-    surname: 'Gómez',
-    dni: '87654321',
-    country: 'Caracas',
-    email: 'maria.gomez@example.com',
-    subsidiary: 'Bogotá',
-  },
-]
+console.log('Voluntarios desde Redux:', volunteersRaw)
   return (
     <>
       <SectionMain>
@@ -144,7 +126,7 @@ const VolunteersPage = () => {
               },
             ]}
             perPage={10}
-            elements={mockVolunteers}
+            elements={volunteers}
           />
         </CardBox>
       </SectionMain>

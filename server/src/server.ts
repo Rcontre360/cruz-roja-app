@@ -11,6 +11,8 @@ import {usersRouter} from "./api/users/router";
 import {env} from "./common/env";
 import errorHandler from "./middleware/error";
 import requestLogger from "./middleware/logger";
+import { activitiesRouter } from "./api/activities/router";
+
 
 const serviceName = "server";
 const logger = pino({name: serviceName, level: env.PINO_LOG_LEVEL});
@@ -35,6 +37,7 @@ v1.use("/users", usersRouter);
 v1.use("/admin", adminRouter);
 v1.use("/programs", programsRouter);
 v1.use("/requests", requestsRouter);
+v1.use("/activities", activitiesRouter);
 
 app.use("/v1", v1);
 

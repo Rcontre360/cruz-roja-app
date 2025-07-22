@@ -28,46 +28,46 @@ const NewActivityPage = () => {
     endDate: '',
   }
 
-  const handleSubmit = async (values: typeof initialValues) => {
-    // Validaciones básicas
-    if (!values.name || !values.description || !values.startDate || !values.endDate) {
-      setError('Por favor, completa todos los campos')
-      return
-    }
-
-    const start = new Date(values.startDate)
-    const end = new Date(values.endDate)
-
-    if (start >= end) {
-      setError('La fecha de inicio debe ser anterior a la fecha de fin')
-      return
-    }
-
-    try {
-      setLoading(true)
-      setError('')
-
-      const formattedValues = {
-        name: values.name,
-        description: values.description,
-        startDate: Math.floor(start.getTime() / 1000),
-        endDate: Math.floor(end.getTime() / 1000),
-        camp: Number(values.camp)
-      }
-
-      const actionResult = await dispatch(onCreateActivity(formattedValues))
-
-      if (actionResult.type === 'activities/create/fulfilled') {
-        router.push('/activities') // Redirige al listado de actividades
-      } else {
-        setError('Error al crear la actividad')
-      }
-    } catch (err) {
-      setError('Hubo un error inesperado al crear la actividad')
-    } finally {
-      setLoading(false)
-    }
+const handleSubmit = async (values: typeof initialValues) => {
+  if (!values.name || !values.description || !values.startDate || !values.endDate) {
+    setError('Por favor, completa todos los campos')
+    return
   }
+
+  if (!values.camp || isNaN(Number(values.camp))) {
+    setError('Por favor, ingresa un número válido para campos disponibles')
+    return
+  }
+
+  const start = new Date(values.startDate)
+  const end = new Date(values.endDate)
+
+  if (start >= end) {
+    setError('La fecha de inicio debe ser anterior a la fecha de fin')
+    return
+  }
+
+  try {
+    setLoading(true)
+    setError('')
+
+    const formattedValues = {
+      name: values.name,
+      description: values.description,
+      startDate: Math.floor(start.getTime() / 1000),
+      endDate: Math.floor(end.getTime() / 1000),
+      camp: Number(values.camp)
+    }
+
+    await dispatch(onCreateActivity(formattedValues)).unwrap()
+
+    router.push('/activities')
+  } catch (err) {
+    setError('Hubo un error al crear la actividad')
+  } finally {
+    setLoading(false)
+  }
+}
 
   return (
     <SectionMain>
@@ -105,12 +105,12 @@ const NewActivityPage = () => {
                 <FormField label="Campos Disponibles" help="Ingrese el número de campos disponibles">
                   <Field
                     name="camp"
-                    as="textarea"
+                    type="number"
                     className="w-full"
                     placeholder="Ej: 5"
-                    rows={3}
                   />
                 </FormField>
+
 
                 <FormField label="Fecha de Inicio" help="Seleccione la fecha de inicio">
                   <Field name="startDate" type="date" className="w-full" />

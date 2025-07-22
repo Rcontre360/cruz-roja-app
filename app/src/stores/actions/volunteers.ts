@@ -20,24 +20,26 @@ const INIT_STATE: VolunteerState = {
 }
 
 // Acción para obtener todos los voluntarios
-export const onGetVolunteers = createAsyncThunk<Volunteer[], void>(
-  'volunteers/all',
+export const onGetVolunteers = createAsyncThunk(
+  'volunteers/getAll',
   async (_, { rejectWithValue }) => {
     try {
-      const res = await api.get<{ volunteers: Volunteer[] }>('/volunteers/all')
-      return res.data.volunteers
+      const response = await api.get('/users/all')
+      return response.data.users
     } catch (err) {
-      return []
+      return handleAPIError(err, rejectWithValue)
     }
   }
 )
+
+
 
 // Acción para crear un voluntario nuevo
 export const onCreateVolunteer = createAsyncThunk(
   'volunteers/create',
   async (data: CreateVolunteerBody, { rejectWithValue }) => {
     try {
-      const res = await api.post('/volunteers/create', data)
+      const res = await api.post('/users/create', data)
       return res.data
     } catch (err) {
       return handleAPIError(err, rejectWithValue)
@@ -53,7 +55,7 @@ export const onUpdateVolunteer = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const res = await api.put(`/volunteers/update/${data.id}`, data)
+      const res = await api.put(`/users/modify/${data.id}`, data)
       return res.data
     } catch (err) {
       return handleAPIError(err, rejectWithValue)
@@ -66,7 +68,7 @@ export const onDeleteVolunteer = createAsyncThunk(
   'volunteers/delete',
   async ({ id }: { id: string }, { rejectWithValue }) => {
     try {
-      await api.delete(`/volunteers/remove/${id}`)
+      await api.delete(`/users/delete/${id}`)
       return { id }
     } catch (err) {
       return handleAPIError(err, rejectWithValue)

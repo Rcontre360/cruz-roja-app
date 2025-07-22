@@ -39,6 +39,7 @@ model Activity {
   id          String   @id @default(uuid()) @db.Uuid
   name        String
   description String
+  camp        Int 
   creatorId   String   @db.Uuid
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
